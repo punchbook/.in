@@ -25,7 +25,6 @@
       --gray-500: #6B7280;
       --gray-700: #374151;
       --gray-900: #111827;
-      /* Controller same as admin - no purple */
       --controller: #2E6FD8;
       --controller-dark: #1A56B8;
     }
@@ -44,7 +43,6 @@
       overflow: hidden;
     }
 
-    /* Decorative blobs */
     .login-container::before {
       content: '';
       position: absolute;
@@ -100,7 +98,6 @@
     .login-logo h1 { color: #0f172a; font-size: 24px; font-weight: 700; margin-top: 12px; }
     .login-logo p { color: var(--gray-500); font-size: 14px; margin-top: 2px; }
 
-    /* Role Selector Tabs */
     .role-tabs {
       display: flex;
       background: var(--primary-xlight);
@@ -136,7 +133,6 @@
       opacity: 1;
     }
 
-    /* Role badge shown in header */
     .role-badge {
       display: inline-flex;
       align-items: center;
@@ -149,7 +145,6 @@
     .role-badge.admin      { background: #DBEAFE; color: var(--primary); }
     .role-badge.controller { background: #DBEAFE; color: var(--primary); }
 
-    /* Sidebar accent for controller - same blue */
     .sidebar.controller-mode .nav-link.active { background: var(--primary); }
     .sidebar.controller-mode .sidebar-logo h2 { color: var(--primary); }
 
@@ -193,6 +188,9 @@
       z-index: 90;
     }
 
+    /* ════════════════════════════════════════════
+       SIDEBAR — UPDATED LOGO SECTION
+       ════════════════════════════════════════════ */
     .sidebar {
       position: fixed; left: 0; top: 0;
       width: 260px; height: 100vh;
@@ -201,12 +199,39 @@
       transition: transform 0.3s ease;
     }
 
+    /* Logo block — column layout, centered */
     .sidebar-logo {
-      display: flex; align-items: center; gap: 12px;
-      padding-bottom: 20px; border-bottom: 1px solid var(--gray-200); margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--gray-200);
+      margin-bottom: 20px;
+      text-align: center;
     }
-    .sidebar-logo img { width: 40px; height: 40px; object-fit: contain; }
-    .sidebar-logo h2 { font-size: 18px; color: var(--gray-900); }
+
+    /* Bigger logo image */
+    .sidebar-logo img {
+      width: 76px;
+      height: 76px;
+      object-fit: contain;
+      border-radius: 14px;
+      filter: drop-shadow(0 4px 10px rgba(46,111,216,0.18));
+      transition: transform 0.3s ease;
+    }
+    .sidebar-logo img:hover {
+      transform: scale(1.07);
+    }
+
+    /* "Punch Book" text below logo */
+    .sidebar-logo h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--gray-900);
+      letter-spacing: 0.2px;
+    }
+    /* ═══════════════════════════════════════════ */
 
     .nav-menu { list-style: none; }
     .nav-item { margin-bottom: 4px; }
@@ -220,14 +245,12 @@
     .nav-link.active { background: var(--primary); color: white; }
     .nav-link i { width: 20px; }
 
-    /* Controller: locked nav items */
     .nav-link.locked {
       opacity: 0.4;
       cursor: not-allowed;
       pointer-events: none;
     }
 
-    /* Controller: same blue sidebar accent */
     body.controller-mode .nav-link.active { background: var(--primary); }
     body.controller-mode .sidebar-logo h2 { color: var(--primary); }
 
@@ -250,7 +273,7 @@
     }
     .admin-avatar.controller-avatar { background: var(--primary); }
 
-    /* ── ACCESS DENIED BANNER ── */
+    /* ── ACCESS DENIED ── */
     .access-denied {
       display: none;
       flex-direction: column;
@@ -391,6 +414,9 @@
       .modal { border-radius: 12px; }
       .stat-card { padding: 16px; }
       .stat-card .stat-value { font-size: 26px; }
+      /* Sidebar logo on tablet */
+      .sidebar-logo img { width: 62px; height: 62px; }
+      .sidebar-logo h2  { font-size: 16px; }
     }
 
     @media (max-width: 480px) {
@@ -426,6 +452,10 @@
       .modal-footer .btn { flex: 1; }
 
       .toast { max-width: 85vw; font-size: 14px; padding: 14px 20px; }
+
+      /* Sidebar logo on mobile */
+      .sidebar-logo img { width: 56px; height: 56px; }
+      .sidebar-logo h2  { font-size: 15px; }
     }
   </style>
 </head>
@@ -442,7 +472,6 @@
         <p>Admin Panel</p>
       </div>
 
-      <!-- Role Selector -->
       <div class="role-tabs">
         <button class="role-tab active-admin" id="tabAdmin" onclick="selectRole('admin')">
           <i class="fas fa-shield-alt"></i> Admin
@@ -477,10 +506,12 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <nav class="sidebar" id="sidebar">
+      <!-- ── UPDATED SIDEBAR LOGO ── -->
       <div class="sidebar-logo">
         <img src="punchbook_logo.png" alt="Punch Book">
         <h2>Punch Book</h2>
       </div>
+      <!-- ─────────────────────────── -->
       <ul class="nav-menu">
         <li class="nav-item">
           <a class="nav-link active" data-page="dashboard">
@@ -548,13 +579,11 @@
 
       <!-- ── Employees (Admin only) ── -->
       <div class="page" id="employeesPage">
-        <!-- Access denied shown for controller -->
         <div class="access-denied" id="empAccessDenied">
           <i class="fas fa-lock"></i>
           <h2>Access Restricted</h2>
           <p>You don't have permission to manage employees.<br>Please contact the Admin.</p>
         </div>
-        <!-- Real content for admin -->
         <div id="empContent">
           <div class="card">
             <div class="card-header">
@@ -595,13 +624,11 @@
 
       <!-- ── Reports (Admin only) ── -->
       <div class="page" id="reportsPage">
-        <!-- Access denied for controller -->
         <div class="access-denied" id="rptAccessDenied">
           <i class="fas fa-lock"></i>
           <h2>Access Restricted</h2>
           <p>You don't have permission to view reports.<br>Please contact the Admin.</p>
         </div>
-        <!-- Real content for admin -->
         <div id="rptContent">
           <div class="card">
             <div class="card-header"><h3>Attendance Report</h3></div>
@@ -720,8 +747,8 @@
     const API_URL = 'https://script.google.com/macros/s/AKfycbyuAX9wMJcfRoFozWF1FTR_Gt5c8wIVw1EUYraVzB3iNUEb29dxOP8SAs9MXo7CI8op/exec';
     // ============================================================
 
-    let currentUser   = null;   // logged-in user object
-    let selectedRole  = 'admin'; // 'admin' | 'controller'
+    let currentUser   = null;
+    let selectedRole  = 'admin';
     let currentFaceEmpId   = null;
     let currentFaceEmpName = null;
     let faceDescriptor     = null;
@@ -742,13 +769,11 @@
 
       if (role === 'admin') {
         tabAdmin.classList.add('active-admin');
-        loginBtn.textContent = '';
         loginBtn.innerHTML   = '<i class="fas fa-sign-in-alt"></i> Login as Admin';
         loginBtn.className   = 'btn btn-primary';
         hint.textContent     = 'mtl@punchbook.in / mtl@123';
       } else {
         tabController.classList.add('active-controller');
-        loginBtn.textContent = '';
         loginBtn.innerHTML   = '<i class="fas fa-sign-in-alt"></i> Login as Controller';
         loginBtn.className   = 'btn btn-controller';
         hint.textContent     = 'Use your Controller credentials';
@@ -854,9 +879,7 @@
       document.getElementById('appContainer').style.display = 'block';
 
       const isController = currentUser.role === 'controller';
-      const isAdmin      = currentUser.role === 'admin';
 
-      // Header
       document.getElementById('adminName').textContent = currentUser.name;
       const avatarEl = document.getElementById('adminAvatar');
       avatarEl.textContent  = currentUser.name.charAt(0).toUpperCase();
@@ -868,7 +891,6 @@
         ? '<i class="fas fa-user-cog"></i> Controller'
         : '<i class="fas fa-shield-alt"></i> Admin';
 
-      // Sidebar accent
       if (isController) {
         document.body.classList.add('controller-mode');
         document.getElementById('sidebar').classList.add('controller-mode');
@@ -877,9 +899,7 @@
         document.getElementById('sidebar').classList.remove('controller-mode');
       }
 
-      // Lock nav items for controller
       applyRoleAccess();
-
       loadDashboard();
     }
 
@@ -887,7 +907,6 @@
     function applyRoleAccess() {
       const isController = currentUser.role === 'controller';
 
-      // Nav items
       const empNav = document.getElementById('navEmployees');
       const rptNav = document.getElementById('navReports');
 
@@ -899,7 +918,6 @@
         rptNav.querySelector('.nav-link').classList.remove('locked');
       }
 
-      // Page sections
       const empAccessDenied = document.getElementById('empAccessDenied');
       const empContent      = document.getElementById('empContent');
       const rptAccessDenied = document.getElementById('rptAccessDenied');
@@ -920,7 +938,6 @@
 
     // ══════════════════════ NAVIGATION ══════════════════════
     function navigateTo(page) {
-      // Controller restriction
       if (currentUser.role === 'controller' && (page === 'employees' || page === 'reports')) {
         showToast('Access restricted. Admin only.', 'error');
         return;
@@ -1204,7 +1221,6 @@
       const result = await apiCall({ action: 'getAllAttendance' });
       if (result.success) {
         renderAttendance(result.records);
-        // Populate employee filter if not already done
         const empResult = await apiCall({ action: 'getAllEmployees' });
         if (empResult.success) populateEmployeeFilter(empResult.employees);
       }
