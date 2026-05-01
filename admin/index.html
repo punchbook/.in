@@ -189,7 +189,7 @@
     }
 
     /* ════════════════════════════════════════════
-       SIDEBAR — PREMIUM LOGO SECTION
+       SIDEBAR — PREMIUM LOGO SECTION (UPDATED)
        ════════════════════════════════════════════ */
     .sidebar {
       position: fixed; left: 0; top: 0;
@@ -199,52 +199,48 @@
       transition: transform 0.3s ease;
     }
 
-    /* Logo block — column layout, centered */
+    /* Logo container matches the attached image closely */
     .sidebar-logo {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
-      padding: 30px 10px; /* Thoda jyada padding space ke liye */
-      border-bottom: 1px solid var(--gray-200);
-      margin-bottom: 20px;
+      gap: 4px; /* Gap kam kar diya */
+      padding: 15px 10px 20px; /* Top padding kam kar di (upar shift karne ke liye) */
+      margin-bottom: 24px;
       text-align: center;
-      background: var(--gray-50); /* Background thoda alag dikhne ke liye */
-      border-radius: 12px; /* Container ko slightly round kiya */
+      background: #FAFAFA; /* Soft clean background */
+      border-radius: 16px; /* Image jaisa round border */
+      border: 1px solid var(--gray-200);
     }
 
-    /* Sidebar logo image with 3D Effect */
     .sidebar-logo img {
-      width: 130px; /* Size thoda bada kiya gaya hai */
+      width: 64px; /* Size kaafi chhota kar diya (100px -> 64px) */
       height: auto;
       display: block;
-      /* Login page wala perspective effect */
-      transform: perspective(900px) rotateX(12deg) rotateY(-10deg) scale(1.05);
-      filter: drop-shadow(0 15px 25px rgba(0,0,0,0.2));
+      transform: perspective(900px) rotateX(8deg) rotateY(-5deg) scale(1.05);
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.15)); /* Soft shadow */
       transition: all 0.4s ease;
-      border-radius: 12px;
+      margin-bottom: 6px; /* Image aur text ke beech ka gap */
     }
 
     .sidebar-logo img:hover {
       transform: perspective(900px) rotateX(0deg) rotateY(0deg) scale(1.1);
-      filter: drop-shadow(0 20px 30px rgba(0,0,0,0.3));
+      filter: drop-shadow(0 12px 20px rgba(0,0,0,0.25));
     }
 
-    /* Sidebar Title Styling */
     .sidebar-logo h2 {
       font-size: 20px;
       font-weight: 800;
-      color: #0f172a; /* Darker slate color for premium feel */
-      letter-spacing: 0.5px;
-      margin-top: 5px;
+      color: #0f172a;
+      letter-spacing: 0.2px;
+      margin-top: 0;
     }
 
-    /* Sidebar Sub-text (Admin Panel) */
     .sidebar-logo p {
       color: var(--gray-500);
       font-size: 13px;
       font-weight: 500;
-      margin-top: -5px;
+      margin-top: 0;
     }
     /* ═══════════════════════════════════════════ */
 
@@ -427,8 +423,8 @@
       .stat-card { padding: 16px; }
       .stat-card .stat-value { font-size: 26px; }
       /* Sidebar logo on tablet */
-      .sidebar-logo { padding: 20px 10px; }
-      .sidebar-logo img { width: 80px; }
+      .sidebar-logo { padding: 15px 10px; }
+      .sidebar-logo img { width: 55px; }
       .sidebar-logo h2  { font-size: 18px; }
       .sidebar-logo p { font-size: 12px; }
     }
@@ -468,7 +464,7 @@
       .toast { max-width: 85vw; font-size: 14px; padding: 14px 20px; }
 
       /* Sidebar logo on mobile */
-      .sidebar-logo img { width: 70px; }
+      .sidebar-logo img { width: 50px; margin-bottom: 4px; }
       .sidebar-logo h2  { font-size: 16px; }
       .sidebar-logo p { font-size: 11px; }
     }
