@@ -199,28 +199,27 @@
       transition: transform 0.3s ease;
     }
 
-    /* Logo container matches the attached image closely */
     .sidebar-logo {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px; /* Gap kam kar diya */
-      padding: 15px 10px 20px; /* Top padding kam kar di (upar shift karne ke liye) */
+      gap: 4px;
+      padding: 15px 10px 20px;
       margin-bottom: 24px;
       text-align: center;
-      background: #FAFAFA; /* Soft clean background */
-      border-radius: 16px; /* Image jaisa round border */
+      background: #FAFAFA;
+      border-radius: 16px;
       border: 1px solid var(--gray-200);
     }
 
     .sidebar-logo img {
-      width: 64px; /* Size kaafi chhota kar diya (100px -> 64px) */
+      width: 64px;
       height: auto;
       display: block;
       transform: perspective(900px) rotateX(8deg) rotateY(-5deg) scale(1.05);
-      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.15)); /* Soft shadow */
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.15));
       transition: all 0.4s ease;
-      margin-bottom: 6px; /* Image aur text ke beech ka gap */
+      margin-bottom: 6px;
     }
 
     .sidebar-logo img:hover {
@@ -242,7 +241,6 @@
       font-weight: 500;
       margin-top: 0;
     }
-    /* ═══════════════════════════════════════════ */
 
     .nav-menu { list-style: none; }
     .nav-item { margin-bottom: 4px; }
@@ -278,6 +276,7 @@
       width: 40px; height: 40px; background: var(--primary);
       border-radius: 50%; display: flex; align-items: center;
       justify-content: center; color: white; font-weight: 600;
+      overflow: hidden; /* Added to keep photo inside circle */
     }
     .admin-avatar.controller-avatar { background: var(--primary); }
 
@@ -422,7 +421,6 @@
       .modal { border-radius: 12px; }
       .stat-card { padding: 16px; }
       .stat-card .stat-value { font-size: 26px; }
-      /* Sidebar logo on tablet */
       .sidebar-logo { padding: 15px 10px; }
       .sidebar-logo img { width: 55px; }
       .sidebar-logo h2  { font-size: 18px; }
@@ -439,31 +437,23 @@
       }
       .logo { width: 130px; height: 130px; }
       .logo-container { top: -72px; }
-
       .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
       .stat-card { padding: 14px; }
       .stat-card .stat-value { font-size: 22px; }
       .stat-card .stat-icon { width: 38px; height: 38px; font-size: 16px; margin-bottom: 10px; }
       .stat-card .stat-label { font-size: 12px; }
-
       .filters { flex-direction: column; }
       .admin-info .role-badge { display: none; }
       .admin-info span:not(.role-badge) { display: none; }
-
       th, td { padding: 10px 10px; font-size: 13px; }
       .btn { font-size: 13px; padding: 11px 18px; }
       .header h1 { font-size: 16px; }
-
       .modal-overlay { padding: 10px; }
       .modal { max-height: 95vh; }
       .modal-header { padding: 16px 18px; }
       .modal-body { padding: 16px 18px; }
       .modal-footer { padding: 12px 18px; flex-wrap: wrap; gap: 8px; }
       .modal-footer .btn { flex: 1; }
-
-      .toast { max-width: 85vw; font-size: 14px; padding: 14px 20px; }
-
-      /* Sidebar logo on mobile */
       .sidebar-logo img { width: 50px; margin-bottom: 4px; }
       .sidebar-logo h2  { font-size: 16px; }
       .sidebar-logo p { font-size: 11px; }
@@ -564,6 +554,7 @@
         <div class="admin-info">
           <span class="role-badge" id="headerRoleBadge"></span>
           <span id="adminName">Admin</span>
+          <!-- AVATAR UPDATED TO HANDLE PHOTO -->
           <div class="admin-avatar" id="adminAvatar">A</div>
         </div>
       </div>
@@ -759,9 +750,9 @@
     const API_URL = 'https://script.google.com/macros/s/AKfycbyuAX9wMJcfRoFozWF1FTR_Gt5c8wIVw1EUYraVzB3iNUEb29dxOP8SAs9MXo7CI8op/exec';
     // ============================================================
 
-    let currentUser   = null;
+    let currentUser    = null;
     let selectedRole  = 'admin';
-    let currentFaceEmpId   = null;
+    let currentFaceEmpId    = null;
     let currentFaceEmpName = null;
     let faceDescriptor     = null;
     let capturedPhotoBase64 = null;
@@ -894,7 +885,16 @@
 
       document.getElementById('adminName').textContent = currentUser.name;
       const avatarEl = document.getElementById('adminAvatar');
-      avatarEl.textContent  = currentUser.name.charAt(0).toUpperCase();
+      
+      // SHOW PHOTO IF AVAILABLE (from FaceData) ELSE SHOW INITIAL LETTER
+      if (currentUser.photo) {
+        avatarEl.innerHTML = `<img src="${currentUser.photo}" alt="Profile" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+        avatarEl.style.background = 'transparent';
+      } else {
+        avatarEl.innerHTML = currentUser.name.charAt(0).toUpperCase();
+        avatarEl.style.background = ''; // reset to default background
+      }
+      
       avatarEl.className    = isController ? 'admin-avatar controller-avatar' : 'admin-avatar';
 
       const badgeEl = document.getElementById('headerRoleBadge');
