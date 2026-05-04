@@ -188,9 +188,6 @@
       z-index: 90;
     }
 
-    /* ════════════════════════════════════════════
-       SIDEBAR — PREMIUM LOGO SECTION (UPDATED)
-       ════════════════════════════════════════════ */
     .sidebar {
       position: fixed; left: 0; top: 0;
       width: 260px; height: 100vh;
@@ -271,32 +268,66 @@
       font-size: 24px; color: var(--gray-700); cursor: pointer;
     }
 
-    .admin-info { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+    .admin-info { 
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end;
+      position: relative;
+    }
     .admin-avatar {
       width: 40px; height: 40px; background: var(--primary);
       border-radius: 50%; display: flex; align-items: center;
       justify-content: center; color: white; font-weight: 600;
-      overflow: hidden; 
-      cursor: pointer; transition: opacity 0.2s; /* Profile styling added */
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s;
     }
-    .admin-avatar:hover { opacity: 0.8; box-shadow: 0 0 8px rgba(0,0,0,0.2); }
+    .admin-avatar:hover { transform: scale(1.05); }
     .admin-avatar.controller-avatar { background: var(--primary); }
 
     /* ── PROFILE DROPDOWN ── */
-    .profile-dropdown-wrap { position: relative; }
     .profile-dropdown {
-      display: none; position: absolute; top: 48px; right: 0;
-      background: white; border: 1px solid var(--gray-200);
-      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-      border-radius: 8px; width: 180px; z-index: 200; overflow: hidden;
+      position: absolute;
+      top: 55px;
+      right: 0;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      min-width: 240px;
+      z-index: 200;
+      display: none;
+      overflow: hidden;
+      border: 1px solid var(--gray-200);
     }
-    .profile-dropdown.active { display: block; animation: fadeIn 0.2s ease; }
+    .profile-dropdown.show { display: block; animation: dropdownFade 0.2s ease; }
+    @keyframes dropdownFade {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .profile-dropdown-header {
+      padding: 14px 16px;
+      background: var(--primary-xlight);
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .profile-dropdown-header .name { font-weight: 600; color: var(--gray-900); font-size: 14px; }
+    .profile-dropdown-header .email { font-size: 12px; color: var(--gray-500); margin-top: 2px; word-break: break-all; }
     .profile-dropdown-item {
-      padding: 12px 16px; font-size: 14px; color: var(--gray-700);
-      display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.2s;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--gray-700);
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
     }
-    .profile-dropdown-item:hover { background: var(--gray-50); color: var(--primary); }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+    .profile-dropdown-item:hover { background: var(--gray-100); }
+    .profile-dropdown-item i { color: var(--primary); width: 18px; }
+    .profile-dropdown-item.logout-item i { color: var(--danger); }
+    .profile-dropdown-item.logout-item:hover { background: #FEE2E2; color: var(--danger); }
 
     /* ── ACCESS DENIED ── */
     .access-denied {
@@ -357,7 +388,7 @@
     .modal-overlay.active { display: flex; }
     .modal { background: white; border-radius: 16px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
     .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; }
-    .modal-header h3 { font-size: 18px; color: var(--gray-900); }
+    .modal-header h3 { font-size: 18px; color: var(--gray-900); display: flex; align-items: center; gap: 8px; }
     .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--gray-500); }
     .modal-body { padding: 24px; }
     .modal-footer { padding: 16px 24px; border-top: 1px solid var(--gray-200); display: flex; justify-content: flex-end; gap: 12px; }
@@ -423,6 +454,13 @@
     .empty-state { text-align: center; padding: 60px 20px; color: var(--gray-500); }
     .empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
 
+    /* Password Strength Hint */
+    .password-hint {
+      font-size: 12px;
+      color: var(--gray-500);
+      margin-top: 4px;
+    }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
       .sidebar { transform: translateX(-100%); }
@@ -443,6 +481,7 @@
       .sidebar-logo img { width: 55px; }
       .sidebar-logo h2  { font-size: 18px; }
       .sidebar-logo p { font-size: 12px; }
+      .profile-dropdown { right: -10px; min-width: 220px; }
     }
 
     @media (max-width: 480px) {
@@ -475,6 +514,7 @@
       .sidebar-logo img { width: 50px; margin-bottom: 4px; }
       .sidebar-logo h2  { font-size: 16px; }
       .sidebar-logo p { font-size: 11px; }
+      .profile-dropdown { right: 0; min-width: 200px; }
     }
   </style>
 </head>
@@ -525,13 +565,11 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <nav class="sidebar" id="sidebar">
-      <!-- ── UPDATED SIDEBAR LOGO ── -->
       <div class="sidebar-logo">
         <img src="punchbook_logo.png" alt="Punch Book">
         <h2>Punch Book</h2>
         <p>Controller</p>
       </div>
-      <!-- ─────────────────────────── -->
       <ul class="nav-menu">
         <li class="nav-item">
           <a class="nav-link active" data-page="dashboard">
@@ -572,19 +610,20 @@
         <div class="admin-info">
           <span class="role-badge" id="headerRoleBadge"></span>
           <span id="adminName">Admin</span>
+          <div class="admin-avatar" id="adminAvatar" onclick="toggleProfileDropdown(event)">A</div>
           
-          <!-- Dropdown container -->
-          <div class="profile-dropdown-wrap">
-            <div class="admin-avatar" id="adminAvatar" onclick="document.getElementById('profileDropdown').classList.toggle('active')">A</div>
-            
-            <div class="profile-dropdown" id="profileDropdown">
-              <div class="profile-dropdown-item" onclick="openPasswordModal()">
-                <i class="fas fa-key"></i> Change Password
-              </div>
-              <div class="profile-dropdown-item" onclick="logout()">
-                <i class="fas fa-sign-out-alt"></i> Logout
-              </div>
+          <!-- Profile Dropdown -->
+          <div class="profile-dropdown" id="profileDropdown">
+            <div class="profile-dropdown-header">
+              <div class="name" id="dropdownName">Admin</div>
+              <div class="email" id="dropdownEmail">admin@example.com</div>
             </div>
+            <button class="profile-dropdown-item" onclick="openChangePasswordModal()">
+              <i class="fas fa-key"></i> Change Password
+            </button>
+            <button class="profile-dropdown-item logout-item" onclick="logout()">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
           </div>
         </div>
       </div>
@@ -739,6 +778,41 @@
     </div>
   </div>
 
+  <!-- ── Change Password Modal ── -->
+  <div class="modal-overlay" id="changePasswordModal">
+    <div class="modal" style="max-width: 450px;">
+      <div class="modal-header">
+        <h3><i class="fas fa-key"></i> Change Password</h3>
+        <button class="modal-close" onclick="closeChangePasswordModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="cpEmail" readonly>
+        </div>
+        <div class="form-group">
+          <label>Current Password *</label>
+          <input type="password" id="cpOldPassword" placeholder="Enter current password" required>
+        </div>
+        <div class="form-group">
+          <label>New Password *</label>
+          <input type="password" id="cpNewPassword" placeholder="Enter new password" required>
+          <div class="password-hint">Minimum 4 characters required</div>
+        </div>
+        <div class="form-group">
+          <label>Confirm New Password *</label>
+          <input type="password" id="cpConfirmPassword" placeholder="Re-enter new password" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeChangePasswordModal()">Cancel</button>
+        <button class="btn btn-primary" style="width:auto;" onclick="submitChangePassword()">
+          <i class="fas fa-save"></i> Update Password
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ── Face Modal ── -->
   <div class="modal-overlay" id="faceModal">
     <div class="modal">
@@ -770,36 +844,12 @@
     </div>
   </div>
 
-  <!-- ── Password Modal (UPDATED: No Current Password) ── -->
-  <div class="modal-overlay" id="passwordModal">
-    <div class="modal" style="max-width: 400px;">
-      <div class="modal-header">
-        <h3>Change Password</h3>
-        <button class="modal-close" onclick="closePasswordModal()">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label>New Password</label>
-          <input type="password" id="newPassword" placeholder="Enter new password">
-        </div>
-        <div class="form-group">
-          <label>Confirm New Password</label>
-          <input type="password" id="confirmNewPassword" placeholder="Confirm new password">
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closePasswordModal()">Cancel</button>
-        <button class="btn btn-primary" onclick="saveNewPassword()" id="updatePwdBtn">Update Password</button>
-      </div>
-    </div>
-  </div>
-
   <div class="toast" id="toast"></div>
 
   <!-- ════════════════════ SCRIPT ════════════════════ -->
   <script>
     // ============================================================
-    // ⚠️ SIRF YEH LINE BADLO - APNI APPS SCRIPT URL YAHAN DAALO
+    // ⚠️ APNI APPS SCRIPT URL YAHAN DAALO
     // ============================================================
     const API_URL = 'https://script.google.com/macros/s/AKfycbyuAX9wMJcfRoFozWF1FTR_Gt5c8wIVw1EUYraVzB3iNUEb29dxOP8SAs9MXo7CI8op/exec';
     // ============================================================
@@ -891,11 +941,12 @@
         });
       });
 
-      // Close dropdown if clicked outside
+      // Close profile dropdown on outside click
       document.addEventListener('click', function(e) {
-        if (!e.target.closest('.profile-dropdown-wrap')) {
-          const dropdown = document.getElementById('profileDropdown');
-          if (dropdown) dropdown.classList.remove('active');
+        const dropdown = document.getElementById('profileDropdown');
+        const avatar = document.getElementById('adminAvatar');
+        if (dropdown && !dropdown.contains(e.target) && e.target !== avatar && !avatar.contains(e.target)) {
+          dropdown.classList.remove('show');
         }
       });
 
@@ -933,6 +984,7 @@
       currentUser  = null;
       selectedRole = 'admin';
       selectRole('admin');
+      document.getElementById('profileDropdown').classList.remove('show');
       document.getElementById('loginPage').style.display    = 'flex';
       document.getElementById('appContainer').style.display = 'none';
       document.getElementById('loginEmail').value    = '';
@@ -948,13 +1000,12 @@
       document.getElementById('adminName').textContent = currentUser.name;
       const avatarEl = document.getElementById('adminAvatar');
       
-      // SHOW PHOTO IF AVAILABLE (from FaceData) ELSE SHOW INITIAL LETTER
       if (currentUser.photo) {
         avatarEl.innerHTML = `<img src="${currentUser.photo}" alt="Profile" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
         avatarEl.style.background = 'transparent';
       } else {
         avatarEl.innerHTML = currentUser.name.charAt(0).toUpperCase();
-        avatarEl.style.background = ''; // reset to default background
+        avatarEl.style.background = '';
       }
       
       avatarEl.className    = isController ? 'admin-avatar controller-avatar' : 'admin-avatar';
@@ -977,55 +1028,72 @@
       loadDashboard();
     }
 
+    // ══════════════════════ PROFILE DROPDOWN ══════════════════════
+    function toggleProfileDropdown(event) {
+      event.stopPropagation();
+      const dropdown = document.getElementById('profileDropdown');
+      
+      // Update dropdown header info
+      document.getElementById('dropdownName').textContent = currentUser.name;
+      document.getElementById('dropdownEmail').textContent = currentUser.email;
+      
+      dropdown.classList.toggle('show');
+    }
+
     // ══════════════════════ CHANGE PASSWORD ══════════════════════
-    function openPasswordModal() {
-      document.getElementById('profileDropdown').classList.remove('active');
-      document.getElementById('newPassword').value = '';
-      document.getElementById('confirmNewPassword').value = '';
-      document.getElementById('passwordModal').classList.add('active');
+    function openChangePasswordModal() {
+      document.getElementById('profileDropdown').classList.remove('show');
+      document.getElementById('cpEmail').value = currentUser.email;
+      document.getElementById('cpOldPassword').value = '';
+      document.getElementById('cpNewPassword').value = '';
+      document.getElementById('cpConfirmPassword').value = '';
+      document.getElementById('changePasswordModal').classList.add('active');
     }
 
-    function closePasswordModal() {
-      document.getElementById('passwordModal').classList.remove('active');
+    function closeChangePasswordModal() {
+      document.getElementById('changePasswordModal').classList.remove('active');
     }
 
-    async function saveNewPassword() {
-      const newPwd = document.getElementById('newPassword').value;
-      const confPwd = document.getElementById('confirmNewPassword').value;
-
-      if (!newPwd || !confPwd) {
+    async function submitChangePassword() {
+      const oldPassword = document.getElementById('cpOldPassword').value.trim();
+      const newPassword = document.getElementById('cpNewPassword').value.trim();
+      const confirmPassword = document.getElementById('cpConfirmPassword').value.trim();
+      
+      if (!oldPassword || !newPassword || !confirmPassword) {
         showToast('All fields are required', 'error');
         return;
       }
-      if (newPwd !== confPwd) {
-        showToast('Passwords do not match', 'error');
+      
+      if (newPassword.length < 4) {
+        showToast('Password must be at least 4 characters', 'error');
         return;
       }
-      if (newPwd.length < 6) {
-        showToast('Password must be at least 6 characters', 'error');
+      
+      if (newPassword !== confirmPassword) {
+        showToast('New passwords do not match', 'error');
         return;
       }
-
-      const btn = document.getElementById('updatePwdBtn');
-      const originalText = btn.innerHTML;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
-      btn.disabled = true;
-
+      
+      if (oldPassword === newPassword) {
+        showToast('New password must be different from current', 'error');
+        return;
+      }
+      
+      showToast('Updating password...', '');
+      
       const result = await apiCall({
         action: 'changePassword',
-        userId: currentUser.id,
-        role: currentUser.role, // Pass checking if it's admin or controller
-        newPassword: newPwd
+        email: currentUser.email,
+        role: currentUser.role,
+        oldPassword: oldPassword,
+        newPassword: newPassword
       });
-
-      btn.innerHTML = originalText;
-      btn.disabled = false;
-
+      
       if (result.success) {
         showToast(result.message, 'success');
-        closePasswordModal();
+        closeChangePasswordModal();
       } else {
-        showToast(result.message, 'error');
+        showToast(result.message || 'Failed to update password', 'error');
       }
     }
 
