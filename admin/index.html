@@ -189,7 +189,7 @@
     }
 
     /* ════════════════════════════════════════════
-       SIDEBAR — SMALLER WIDTH & COLLAPSIBLE SYSTEM
+       SIDEBAR
        ════════════════════════════════════════════ */
     .sidebar {
       position: fixed; left: 0; top: 0;
@@ -246,7 +246,7 @@
     }
 
     .sidebar-logo p {
-      color: var(--gray-800);
+      color: #000000; /* Changed to solid black */
       font-size: 11px; 
       font-weight: 600;
       margin-top: 0px; 
@@ -286,7 +286,6 @@
     .header-left { display: flex; align-items: center; gap: 14px; }
     .header h1 { font-size: 24px; color: var(--gray-900); }
 
-    /* Custom SVG Toggle Button */
     .menu-toggle-btn {
       display: flex;
       align-items: center;
@@ -299,22 +298,52 @@
     }
     .menu-toggle-btn:hover { background: var(--gray-200); }
 
+    /* ════════════════════════════════════════════
+       ADMIN AVATAR / PROFILE TRIGGER
+       ════════════════════════════════════════════ */
     .admin-info { 
       display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end;
       position: relative;
     }
-    
-    .admin-avatar {
-      width: 40px; height: 40px; background: var(--primary);
-      border-radius: 50%; display: flex; align-items: center;
-      justify-content: center; color: white; font-weight: 600;
-      overflow: hidden;
+    .admin-profile-trigger {
+      display: flex;
+      align-items: center;
+      gap: 12px;
       cursor: pointer;
-      transition: transform 0.2s;
-      font-size: 18px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      transition: background 0.2s;
     }
-    .admin-avatar:hover { transform: scale(1.05); }
-    .admin-avatar.controller-avatar { background: var(--primary); }
+    .admin-profile-trigger:hover {
+      background: rgba(0,0,0,0.04);
+    }
+    #adminName {
+      font-size: 15px;
+      font-weight: 600;
+      color: #202124;
+      display: flex;
+      align-items: center;
+    }
+    .admin-avatar {
+      width: 38px; height: 38px; 
+      background: #1a73e8; 
+      border-radius: 50%; 
+      display: flex; align-items: center; 
+      justify-content: center; 
+      color: white; font-weight: 600;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .admin-profile-trigger:hover .admin-avatar { 
+      transform: scale(1.05); 
+    }
+    .admin-avatar.controller-avatar { background: #1a73e8; }
+    
+    .admin-avatar svg {
+      width: 22px;
+      height: 22px;
+      fill: white;
+    }
 
     /* ── PROFILE DROPDOWN ── */
     .profile-dropdown {
@@ -532,7 +561,6 @@
       .stat-card .stat-label { font-size: 12px; }
       .filters { flex-direction: column; }
       .admin-info .role-badge { display: none; }
-      .admin-info span:not(.role-badge) { display: none; }
       th, td { padding: 10px 10px; font-size: 13px; }
       .btn { font-size: 13px; padding: 11px 18px; }
       .header h1 { font-size: 16px; }
@@ -630,7 +658,6 @@
     <main class="main-content">
       <div class="header">
         <div class="header-left">
-          <!-- UPDATED TOGGLE BUTTON WITH CUSTOM SVG ICON -->
           <button id="menuToggleBtn" class="menu-toggle-btn">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -641,13 +668,16 @@
           <h1 id="pageTitle">Dashboard</h1>
         </div>
         <div class="admin-info">
-          <span class="role-badge" id="headerRoleBadge"></span>
-          <span id="adminName">Admin</span>
-          <!-- AVATAR PROFILE SVG -->
-          <div class="admin-avatar" id="adminAvatar" onclick="toggleProfileDropdown(event)">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="white" style="margin-top: 2px;">
-              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-            </svg>
+          <span class="role-badge" id="headerRoleBadge" style="display:none;"></span>
+          
+          <!-- CLICKABLE PROFILE TRIGGER WITH CARET AND AVATAR -->
+          <div class="admin-profile-trigger" onclick="toggleProfileDropdown(event)">
+            <span id="adminName">Admin</span>
+            <div class="admin-avatar" id="adminAvatar">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+              </svg>
+            </div>
           </div>
           
           <!-- Profile Dropdown -->
@@ -988,11 +1018,11 @@
         });
       });
 
-      // Close profile dropdown on outside click
+      // Close profile dropdown on outside click (updated to target the trigger)
       document.addEventListener('click', function(e) {
         const dropdown = document.getElementById('profileDropdown');
-        const avatar = document.getElementById('adminAvatar');
-        if (dropdown && !dropdown.contains(e.target) && e.target !== avatar && !avatar.contains(e.target)) {
+        const trigger = document.querySelector('.admin-profile-trigger');
+        if (dropdown && !dropdown.contains(e.target) && trigger && !trigger.contains(e.target)) {
           dropdown.classList.remove('show');
         }
       });
@@ -1044,7 +1074,9 @@
 
       const isController = currentUser.role === 'controller';
 
-      document.getElementById('adminName').textContent = currentUser.name;
+      const adminNameEl = document.getElementById('adminName');
+      // Adding the dropdown caret next to the text
+      adminNameEl.innerHTML = currentUser.name + ' <i class="fas fa-caret-down" style="font-size: 14px; margin-left: 5px; color: var(--gray-500);"></i>';
       
       const sidebarRoleText = document.getElementById('sidebarRoleText');
       if (sidebarRoleText) {
@@ -1053,22 +1085,29 @@
 
       const avatarEl = document.getElementById('adminAvatar');
       
-      if (currentUser.photo) {
-        avatarEl.innerHTML = `<img src="${currentUser.photo}" alt="Profile" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
-        avatarEl.style.background = 'transparent';
+      if (isController) {
+        if (currentUser.photo) {
+          avatarEl.innerHTML = `<img src="${currentUser.photo}" alt="Profile" style="width:100%;height:100%;object-fit:cover;">`;
+          avatarEl.style.background = 'transparent';
+          avatarEl.style.boxShadow = 'none';
+        } else {
+          // Default Controller (Google Style blue icon)
+          avatarEl.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+          avatarEl.style.background = '#1a73e8';
+          avatarEl.style.boxShadow = 'none';
+        }
+        avatarEl.className = 'admin-avatar controller-avatar';
       } else {
-        // EXACT MATCH SVG ICON 
-        avatarEl.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="white" style="margin-top: 2px;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
-        avatarEl.style.background = '';
+        // ADMIN SPECIFIC LOGO
+        avatarEl.innerHTML = `<img src="punchbook_logo.png" alt="Admin Logo" style="width: 120%; height: auto; margin-top: 4px; margin-left: -2px; object-fit: contain;">`;
+        avatarEl.style.background = '#ffffff';
+        avatarEl.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+        avatarEl.className = 'admin-avatar';
       }
       
-      avatarEl.className    = isController ? 'admin-avatar controller-avatar' : 'admin-avatar';
-
+      // Removed the unnecessary header role badge logic completely from view since we use the name
       const badgeEl = document.getElementById('headerRoleBadge');
-      badgeEl.className   = isController ? 'role-badge controller' : 'role-badge admin';
-      badgeEl.innerHTML   = isController
-        ? '<i class="fas fa-user-cog"></i> Controller'
-        : '<i class="fas fa-shield-alt"></i> Admin';
+      if(badgeEl) badgeEl.style.display = 'none';
 
       if (isController) {
         document.body.classList.add('controller-mode');
