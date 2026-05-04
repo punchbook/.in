@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Punch Book - Admin Panel</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
   <style>
@@ -197,50 +197,50 @@
     }
 
     /* ════════════════════════════════════════════
-       SIDEBAR — BIGGER PREMIUM LOGO SECTION ✨
+       SIDEBAR — SCREENSHOT EXACT MATCH LOGO
        ════════════════════════════════════════════ */
     .sidebar-logo {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
-      padding: 25px 15px 28px;
+      padding: 0 0 16px 0; 
       margin-bottom: 24px;
       text-align: center;
-      background: linear-gradient(135deg, #FAFAFA 0%, #F0F4FF 100%);
-      border-radius: 18px;
+      /* Sharp cut background to match the screenshot */
+      background: linear-gradient(to bottom, #2b61b3 0%, #2b61b3 45%, #ffffff 45%, #ffffff 100%);
+      border-radius: 12px;
       border: 1px solid var(--gray-200);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+      overflow: hidden;
     }
 
     .sidebar-logo img {
-      width: 110px;
+      width: 80px; /* Adjusted size */
       height: auto;
       display: block;
-      transform: perspective(900px) rotateX(10deg) rotateY(-8deg) scale(1.05);
-      filter: drop-shadow(0 12px 18px rgba(0,0,0,0.20));
-      transition: all 0.4s ease;
-      margin-bottom: 10px;
+      margin-top: 22px; /* Placed exactly on the line */
+      margin-bottom: 8px;
+      filter: drop-shadow(0 6px 8px rgba(0,0,0,0.35));
+      transition: transform 0.3s ease;
     }
 
     .sidebar-logo img:hover {
-      transform: perspective(900px) rotateX(0deg) rotateY(0deg) scale(1.12);
-      filter: drop-shadow(0 18px 28px rgba(46,111,216,0.30));
+      transform: translateY(-2px) scale(1.05);
     }
 
     .sidebar-logo h2 {
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 800;
-      color: #0f172a;
+      color: #000000;
       letter-spacing: 0.3px;
-      margin-top: 4px;
+      margin: 0;
     }
 
     .sidebar-logo p {
-      color: var(--gray-500);
+      color: var(--gray-800);
       font-size: 13px;
       font-weight: 500;
-      margin-top: 0;
+      margin-top: 2px;
     }
 
     .nav-menu { list-style: none; }
@@ -481,9 +481,9 @@
       .modal { border-radius: 12px; }
       .stat-card { padding: 16px; }
       .stat-card .stat-value { font-size: 26px; }
-      .sidebar-logo { padding: 20px 12px 22px; }
-      .sidebar-logo img { width: 90px; }
-      .sidebar-logo h2  { font-size: 20px; }
+      .sidebar-logo { padding: 0 0 15px 0; }
+      .sidebar-logo img { width: 70px; margin-top: 20px; margin-bottom: 6px; }
+      .sidebar-logo h2  { font-size: 18px; }
       .sidebar-logo p { font-size: 12px; }
       .profile-dropdown { right: -10px; min-width: 220px; }
     }
@@ -515,8 +515,8 @@
       .modal-body { padding: 16px 18px; }
       .modal-footer { padding: 12px 18px; flex-wrap: wrap; gap: 8px; }
       .modal-footer .btn { flex: 1; }
-      .sidebar-logo img { width: 80px; margin-bottom: 6px; }
-      .sidebar-logo h2  { font-size: 18px; }
+      .sidebar-logo img { width: 65px; margin-top: 18px; margin-bottom: 6px; }
+      .sidebar-logo h2  { font-size: 16px; }
       .sidebar-logo p { font-size: 11px; }
       .profile-dropdown { right: 0; min-width: 200px; }
     }
