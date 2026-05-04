@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -1506,8 +1506,8 @@
           <td>${pinBtn}</td>
           <td>${r.punchOut || '-'}</td>
           <td>${poutBtn}</td>
-          <td>${r.otPunchIn || '-'}</td>
-          <td>${r.otPunchOut || '-'}</td>
+          <td style="color: var(--primary); font-weight: 600;">${r.otPunchIn || '-'}</td>
+          <td style="color: var(--primary); font-weight: 600;">${r.otPunchOut || '-'}</td>
           <td><span class="badge badge-${r.status === 'Present' ? 'success' : r.status === 'Late' ? 'warning' : 'info'}">${r.status}</span></td>
         </tr>`;
       }).join('');
@@ -1789,8 +1789,8 @@
           <td>${pinBtn}</td>
           <td>${r.punchOut || '-'}</td>
           <td>${poutBtn}</td>
-          <td>${r.otPunchIn || '-'}</td>
-          <td>${r.otPunchOut || '-'}</td>
+          <td style="color: var(--primary); font-weight: 600;">${r.otPunchIn || '-'}</td>
+          <td style="color: var(--primary); font-weight: 600;">${r.otPunchOut || '-'}</td>
           <td><span class="badge badge-${r.status === 'Present' ? 'success' : r.status === 'Late' ? 'warning' : 'info'}">${r.status}</span></td>
         </tr>`;
       }).join('');
