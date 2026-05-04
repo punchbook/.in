@@ -31,8 +31,6 @@
 
     body { font-family: 'Inter', sans-serif; background: #1e3a8a; min-height: 100vh; overflow-x: hidden; }
 
-
-
     /* ── LOGIN ── */
     .login-container {
       min-height: 100vh;
@@ -699,6 +697,21 @@
             <i class="fas fa-clock"></i><span>Attendance</span>
           </a>
         </li>
+        <li class="nav-item" id="navOvertime">
+          <a class="nav-link" data-page="overtime">
+            <i class="fas fa-business-time"></i><span>Overtime</span>
+          </a>
+        </li>
+        <li class="nav-item" id="navLeave">
+          <a class="nav-link" data-page="leave">
+            <i class="fas fa-calendar-minus"></i><span>Leave</span>
+          </a>
+        </li>
+        <li class="nav-item" id="navHolidays">
+          <a class="nav-link" data-page="holidays">
+            <i class="fas fa-umbrella-beach"></i><span>Holidays</span>
+          </a>
+        </li>
         <li class="nav-item" id="navReports">
           <a class="nav-link" data-page="reports">
             <i class="fas fa-chart-bar"></i><span>Reports</span>
@@ -820,6 +833,36 @@
         </div>
       </div>
 
+      <!-- ── Overtime ── -->
+      <div class="page" id="overtimePage">
+        <div class="card">
+          <div class="card-header"><h3>Overtime Management</h3></div>
+          <div class="card-body">
+            <div class="empty-state"><i class="fas fa-business-time"></i><p>Overtime features coming soon...</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Leave ── -->
+      <div class="page" id="leavePage">
+        <div class="card">
+          <div class="card-header"><h3>Leave Management</h3></div>
+          <div class="card-body">
+            <div class="empty-state"><i class="fas fa-calendar-minus"></i><p>Leave features coming soon...</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Holidays ── -->
+      <div class="page" id="holidaysPage">
+        <div class="card">
+          <div class="card-header"><h3>Holidays List</h3></div>
+          <div class="card-body">
+            <div class="empty-state"><i class="fas fa-umbrella-beach"></i><p>Holidays features coming soon...</p></div>
+          </div>
+        </div>
+      </div>
+
       <!-- ── Reports (Admin only) ── -->
       <div class="page" id="reportsPage">
         <div class="access-denied" id="rptAccessDenied">
@@ -847,6 +890,7 @@
           </div>
         </div>
       </div>
+
     </main>
   </div>
 
@@ -1270,13 +1314,24 @@
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById(page + 'Page').classList.add('active');
 
-      const titles = { dashboard: 'Dashboard', employees: 'Employees', attendance: 'Attendance', reports: 'Reports' };
+      const titles = { 
+        dashboard: 'Dashboard', 
+        employees: 'Employees', 
+        attendance: 'Attendance', 
+        overtime: 'Overtime',
+        leave: 'Leave',
+        holidays: 'Holidays',
+        reports: 'Reports'
+      };
       document.getElementById('pageTitle').textContent = titles[page] || page;
 
       switch(page) {
         case 'dashboard':  loadDashboard();   break;
         case 'employees':  loadEmployees();   break;
         case 'attendance': loadAttendance();  break;
+        case 'overtime':   break;
+        case 'leave':      break;
+        case 'holidays':   break;
         case 'reports':    loadDepartments(); break;
       }
     }
