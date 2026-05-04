@@ -276,9 +276,27 @@
       width: 40px; height: 40px; background: var(--primary);
       border-radius: 50%; display: flex; align-items: center;
       justify-content: center; color: white; font-weight: 600;
-      overflow: hidden; /* Added to keep photo inside circle */
+      overflow: hidden; 
+      cursor: pointer; transition: opacity 0.2s; /* Profile styling added */
     }
+    .admin-avatar:hover { opacity: 0.8; box-shadow: 0 0 8px rgba(0,0,0,0.2); }
     .admin-avatar.controller-avatar { background: var(--primary); }
+
+    /* ── PROFILE DROPDOWN ── */
+    .profile-dropdown-wrap { position: relative; }
+    .profile-dropdown {
+      display: none; position: absolute; top: 48px; right: 0;
+      background: white; border: 1px solid var(--gray-200);
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+      border-radius: 8px; width: 180px; z-index: 200; overflow: hidden;
+    }
+    .profile-dropdown.active { display: block; animation: fadeIn 0.2s ease; }
+    .profile-dropdown-item {
+      padding: 12px 16px; font-size: 14px; color: var(--gray-700);
+      display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.2s;
+    }
+    .profile-dropdown-item:hover { background: var(--gray-50); color: var(--primary); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
     /* ── ACCESS DENIED ── */
     .access-denied {
@@ -554,8 +572,20 @@
         <div class="admin-info">
           <span class="role-badge" id="headerRoleBadge"></span>
           <span id="adminName">Admin</span>
-          <!-- AVATAR UPDATED TO HANDLE PHOTO -->
-          <div class="admin-avatar" id="adminAvatar">A</div>
+          
+          <!-- Dropdown container -->
+          <div class="profile-dropdown-wrap">
+            <div class="admin-avatar" id="adminAvatar" onclick="document.getElementById('profileDropdown').classList.toggle('active')">A</div>
+            
+            <div class="profile-dropdown" id="profileDropdown">
+              <div class="profile-dropdown-item" onclick="openPasswordModal()">
+                <i class="fas fa-key"></i> Change Password
+              </div>
+              <div class="profile-dropdown-item" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -740,6 +770,30 @@
     </div>
   </div>
 
+  <!-- ── Password Modal (UPDATED: No Current Password) ── -->
+  <div class="modal-overlay" id="passwordModal">
+    <div class="modal" style="max-width: 400px;">
+      <div class="modal-header">
+        <h3>Change Password</h3>
+        <button class="modal-close" onclick="closePasswordModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>New Password</label>
+          <input type="password" id="newPassword" placeholder="Enter new password">
+        </div>
+        <div class="form-group">
+          <label>Confirm New Password</label>
+          <input type="password" id="confirmNewPassword" placeholder="Confirm new password">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closePasswordModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveNewPassword()" id="updatePwdBtn">Update Password</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <!-- ════════════════════ SCRIPT ════════════════════ -->
@@ -837,6 +891,14 @@
         });
       });
 
+      // Close dropdown if clicked outside
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.profile-dropdown-wrap')) {
+          const dropdown = document.getElementById('profileDropdown');
+          if (dropdown) dropdown.classList.remove('active');
+        }
+      });
+
       await apiCall({ action: 'createDefaultAdmin' });
 
       const today    = new Date();
@@ -913,6 +975,58 @@
 
       applyRoleAccess();
       loadDashboard();
+    }
+
+    // ══════════════════════ CHANGE PASSWORD ══════════════════════
+    function openPasswordModal() {
+      document.getElementById('profileDropdown').classList.remove('active');
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmNewPassword').value = '';
+      document.getElementById('passwordModal').classList.add('active');
+    }
+
+    function closePasswordModal() {
+      document.getElementById('passwordModal').classList.remove('active');
+    }
+
+    async function saveNewPassword() {
+      const newPwd = document.getElementById('newPassword').value;
+      const confPwd = document.getElementById('confirmNewPassword').value;
+
+      if (!newPwd || !confPwd) {
+        showToast('All fields are required', 'error');
+        return;
+      }
+      if (newPwd !== confPwd) {
+        showToast('Passwords do not match', 'error');
+        return;
+      }
+      if (newPwd.length < 6) {
+        showToast('Password must be at least 6 characters', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('updatePwdBtn');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+      btn.disabled = true;
+
+      const result = await apiCall({
+        action: 'changePassword',
+        userId: currentUser.id,
+        role: currentUser.role, // Pass checking if it's admin or controller
+        newPassword: newPwd
+      });
+
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+
+      if (result.success) {
+        showToast(result.message, 'success');
+        closePasswordModal();
+      } else {
+        showToast(result.message, 'error');
+      }
     }
 
     // ══════════════════════ ROLE ACCESS ══════════════════════
