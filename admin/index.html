@@ -194,9 +194,7 @@
       z-index: 90;
     }
 
-    /* ════════════════════════════════════════════
-       SIDEBAR
-       ════════════════════════════════════════════ */
+    /* ── SIDEBAR ── */
     .sidebar {
       position: fixed; left: 0; top: 0;
       width: 230px; 
@@ -445,24 +443,13 @@
     .access-denied h2 { font-size: 22px; color: var(--gray-700); margin-bottom: 8px; }
     .access-denied p { font-size: 14px; }
 
-    /* ── STATS (NEW LAYOUT) ── */
-    .stats-row-1 {
-      display: grid; 
-      grid-template-columns: repeat(4, 1fr); 
-      gap: 16px; 
-      margin-bottom: 16px; 
-    }
-    .stats-row-2 {
-      display: grid; 
-      grid-template-columns: repeat(3, 1fr); 
-      gap: 16px; 
-      margin-bottom: 24px; 
-    }
+    /* ── STATS ── */
+    .stats-row-1 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
+    .stats-row-2 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
 
     .stat-card { 
       background: rgba(255,255,255,0.92); 
-      padding: 16px; 
-      border-radius: 12px; 
+      padding: 16px; border-radius: 12px; 
       box-shadow: 0 4px 20px rgba(15,37,87,0.12), 0 1px 0 rgba(255,255,255,0.5) inset; 
       backdrop-filter: blur(8px);
       border: 1px solid rgba(255,255,255,0.6);
@@ -483,23 +470,16 @@
     .stat-card .stat-value { font-size: 24px; font-weight: 700; color: var(--gray-900); }
     .stat-card .stat-label { color: var(--gray-500); font-size: 12px; margin-top: 2px; }
     .stat-names {
-      font-size: 11px;
-      color: var(--gray-500);
-      margin-top: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-weight: 500;
-      height: 14px;
+      font-size: 11px; color: var(--gray-500); margin-top: 4px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-weight: 500; height: 14px;
     }
 
     /* ── CARD ── */
     .card { 
-      background: rgba(255,255,255,0.92); 
-      border-radius: 16px; 
+      background: rgba(255,255,255,0.92); border-radius: 16px; 
       box-shadow: 0 8px 32px rgba(15,37,87,0.18), 0 1px 0 rgba(255,255,255,0.5) inset; 
-      overflow: hidden;
-      backdrop-filter: blur(8px);
+      overflow: hidden; backdrop-filter: blur(8px);
       border: 1px solid rgba(255,255,255,0.6);
     }
     .card-header {
@@ -522,6 +502,57 @@
     .badge-danger  { background: #FEE2E2; color: #DC2626; }
     .badge-info    { background: #DBEAFE; color: #2563EB; }
 
+    /* ── MAIL COUNT BADGE ── */
+    .mail-count-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      min-width: 36px;
+    }
+    .mail-count-0  { background: #F3F4F6; color: #6B7280; }
+    .mail-count-ok { background: #D1FAE5; color: #059669; }
+    .mail-count-warn { background: #FEF3C7; color: #D97706; }
+    .mail-count-full { background: #FEE2E2; color: #DC2626; }
+
+    /* ── SEND MAIL BUTTON ── */
+    .send-mail-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #DBEAFE;
+      color: var(--primary);
+      font-family: inherit;
+    }
+    .send-mail-btn:hover:not(:disabled) {
+      background: var(--primary);
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(46,111,216,0.3);
+    }
+    .send-mail-btn:disabled {
+      background: #FEE2E2;
+      color: #DC2626;
+      cursor: not-allowed;
+      opacity: 0.8;
+    }
+    .send-mail-btn.sending {
+      background: #FEF3C7;
+      color: #D97706;
+      cursor: wait;
+    }
+
     /* ── MODALS ── */
     .modal-overlay {
       display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -536,12 +567,7 @@
     .modal-body { padding: 24px; }
     .modal-footer { padding: 16px 24px; border-top: 1px solid var(--gray-200); display: flex; justify-content: flex-end; gap: 12px; }
 
-    .photo-modal-img {
-      width: 100%;
-      border-radius: 8px;
-      margin-top: 10px;
-      background-color: #f3f4f6;
-    }
+    .photo-modal-img { width: 100%; border-radius: 8px; margin-top: 10px; background-color: #f3f4f6; }
 
     /* ── FACE ── */
     .face-capture-container { text-align: center; }
@@ -564,8 +590,7 @@
 
     .toast {
       position: fixed;
-      top: 50%;
-      left: 50%;
+      top: 50%; left: 50%;
       transform: translate(-50%, -50%) scale(0.85);
       padding: 16px 28px;
       background: var(--gray-900);
@@ -583,6 +608,7 @@
     }
     .toast.success { background: var(--success); }
     .toast.error   { background: var(--danger); }
+    .toast.warning { background: var(--warning); color: #1a1a1a; }
     .toast.show    { display: block; animation: toastPop 0.3s ease forwards; }
     @keyframes toastPop {
       from { transform: translate(-50%, -50%) scale(0.82); opacity: 0; }
@@ -604,24 +630,17 @@
     .empty-state { text-align: center; padding: 60px 20px; color: var(--gray-500); }
     .empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
 
-    .password-hint {
-      font-size: 12px;
-      color: var(--gray-500);
-      margin-top: 4px;
-    }
+    .password-hint { font-size: 12px; color: var(--gray-500); margin-top: 4px; }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
       body.sidebar-collapsed .sidebar { transform: translateX(0); }
       body.sidebar-collapsed .main-content { margin-left: 0; }
-      
       .sidebar { transform: translateX(-100%); }
       .sidebar.show { transform: translateX(0); }
       .sidebar-overlay.show { display: block; }
       .main-content { margin-left: 0; padding: 16px; }
-      
       .stats-row-1, .stats-row-2 { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-      
       .header h1 { font-size: 18px; }
       .header { margin-bottom: 16px; }
       .card-body { padding: 14px; }
@@ -635,17 +654,10 @@
 
     @media (max-width: 480px) {
       .login-container { padding: 20px 16px; align-items: flex-start; padding-top: 110px; }
-      .login-box {
-        padding: 90px 22px 26px;
-        max-width: 100%;
-        border-radius: 20px;
-        margin-top: 70px;
-      }
+      .login-box { padding: 90px 22px 26px; max-width: 100%; border-radius: 20px; margin-top: 70px; }
       .logo { width: 240px; height: 190px; }
       .logo-container { top: -72px; }
-      
       .stats-row-1, .stats-row-2 { grid-template-columns: 1fr 1fr; gap: 10px; }
-      
       .stat-card { padding: 12px; }
       .stat-card .stat-value { font-size: 18px; }
       .stat-card .stat-icon { width: 32px; height: 32px; font-size: 14px; margin-bottom: 8px; }
@@ -667,6 +679,7 @@
 </head>
 <body>
 
+  <!-- ════════════════════ LOGIN PAGE ════════════════════ -->
   <div class="login-container" id="loginPage">
     <div class="login-box">
       <div class="logo-container">
@@ -706,6 +719,7 @@
     </div>
   </div>
 
+  <!-- ════════════════════ APP ════════════════════ -->
   <div class="app-container" id="appContainer">
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -763,6 +777,7 @@
       <div style="position:fixed;top:-130px;right:-130px;width:450px;height:450px;border-radius:50%;background:rgba(255,255,255,0.06);z-index:0;pointer-events:none;"></div>
       <div style="position:fixed;top:35%;right:-70px;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,0.04);z-index:0;pointer-events:none;"></div>
       <div style="position:fixed;bottom:-100px;left:30%;width:70vw;height:55vh;border-radius:50% 50% 0 0/40% 40% 0 0;background:rgba(121,181,254,0.15);z-index:0;pointer-events:none;"></div>
+      
       <div class="header">
         <div class="header-left">
           <button id="menuToggleBtn" class="menu-toggle-btn">
@@ -801,15 +816,14 @@
         </div>
       </div>
 
+      <!-- ── Dashboard ── -->
       <div class="page active" id="dashboardPage">
-        
         <div class="stats-row-1">
           <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-users"></i></div><div class="stat-value" id="statTotalEmp">0</div><div class="stat-label">Total Employees</div></div>
           <div class="stat-card"><div class="stat-icon green"><i class="fas fa-user-check"></i></div><div class="stat-value" id="statPresent">0</div><div class="stat-label">Present Today</div></div>
           <div class="stat-card"><div class="stat-icon red"><i class="fas fa-user-times"></i></div><div class="stat-value" id="statAbsent">0</div><div class="stat-label">Absent Today</div></div>
           <div class="stat-card"><div class="stat-icon yellow"><i class="fas fa-clock"></i></div><div class="stat-value" id="statLate">0</div><div class="stat-label">Late Today</div></div>
         </div>
-        
         <div class="stats-row-2">
           <div class="stat-card">
             <div class="stat-icon purple"><i class="fas fa-business-time"></i></div>
@@ -857,6 +871,7 @@
         </div>
       </div>
 
+      <!-- ── Employees (Admin only) ── -->
       <div class="page" id="employeesPage">
         <div class="access-denied" id="empAccessDenied">
           <i class="fas fa-lock"></i>
@@ -883,7 +898,8 @@
                       <th>Week Off</th>
                       <th>Status</th>
                       <th>Send Mail</th>
-                      <th>Mail Count</th> <th>Face</th>
+                      <th>Mail Count</th>
+                      <th>Face</th>
                       <th>View Photo</th>
                       <th>Actions</th>
                     </tr>
@@ -896,6 +912,7 @@
         </div>
       </div>
 
+      <!-- ── Attendance ── -->
       <div class="page" id="attendancePage">
         <div class="card">
           <div class="card-header"><h3>Attendance Records</h3></div>
@@ -929,6 +946,7 @@
         </div>
       </div>
 
+      <!-- ── Overtime ── -->
       <div class="page" id="overtimePage">
         <div class="card">
           <div class="card-header"><h3>Overtime Management</h3></div>
@@ -938,6 +956,7 @@
         </div>
       </div>
 
+      <!-- ── Leave ── -->
       <div class="page" id="leavePage">
         <div class="card">
           <div class="card-header"><h3>Leave Management</h3></div>
@@ -947,6 +966,7 @@
         </div>
       </div>
 
+      <!-- ── Holidays ── -->
       <div class="page" id="holidaysPage">
         <div class="card">
           <div class="card-header"><h3>Holidays List</h3></div>
@@ -956,6 +976,7 @@
         </div>
       </div>
 
+      <!-- ── Reports (Admin only) ── -->
       <div class="page" id="reportsPage">
         <div class="access-denied" id="rptAccessDenied">
           <i class="fas fa-lock"></i>
@@ -986,6 +1007,7 @@
     </main>
   </div>
 
+  <!-- ── Photo View Modal ── -->
   <div class="modal-overlay" id="photoModal">
     <div class="modal" style="max-width: 400px;">
       <div class="modal-header">
@@ -998,6 +1020,7 @@
     </div>
   </div>
 
+  <!-- ── Employee Modal ── -->
   <div class="modal-overlay" id="employeeModal">
     <div class="modal">
       <div class="modal-header">
@@ -1051,6 +1074,7 @@
     </div>
   </div>
 
+  <!-- ── Change Password Modal ── -->
   <div class="modal-overlay" id="changePasswordModal">
     <div class="modal" style="max-width: 450px;">
       <div class="modal-header">
@@ -1085,6 +1109,7 @@
     </div>
   </div>
 
+  <!-- ── Face Modal ── -->
   <div class="modal-overlay" id="faceModal">
     <div class="modal">
       <div class="modal-header">
@@ -1117,21 +1142,49 @@
 
   <div class="toast" id="toast"></div>
 
+  <!-- ════════════════════ SCRIPT ════════════════════ -->
   <script>
     // ============== UPDATE THIS URL AFTER DEPLOYING A NEW VERSION ==============
     const API_URL = 'https://script.google.com/macros/s/AKfycbybiwZGXe3nfuZ-1BixZdj0b9ZKVluyarm3LQNfLm-atqaxCj6l1jWxatwYQKMG88je/exec';
+    const MAX_MAIL_LIMIT = 5;
 
     let currentUser    = null;
     let selectedRole  = 'admin';
     let currentFaceEmpId    = null;
     let currentFaceEmpName = null;
-    let faceDescriptor      = null;
+    let faceDescriptor     = null;
     let capturedPhotoBase64 = null;
     let videoStream        = null;
     let faceDetectionInterval = null;
     
     let currentRecentRecords = [];
     let currentAllRecords = [];
+
+    // ── MAIL COUNT BADGE HELPER ──
+    function getMailCountBadgeClass(count) {
+      if (count === 0) return 'mail-count-0';
+      if (count < 3)  return 'mail-count-ok';
+      if (count < MAX_MAIL_LIMIT) return 'mail-count-warn';
+      return 'mail-count-full';
+    }
+
+    function renderMailCountBadge(count) {
+      const cls = getMailCountBadgeClass(count);
+      const icon = count >= MAX_MAIL_LIMIT ? '🔒' : '📧';
+      return `<span class="mail-count-badge ${cls}">${icon} ${count}/${MAX_MAIL_LIMIT}</span>`;
+    }
+
+    function renderSendBtn(empId, count) {
+      const isLimited = count >= MAX_MAIL_LIMIT;
+      if (isLimited) {
+        return `<button class="send-mail-btn" disabled title="Limit full! Sheet mein count kam karo">
+          <i class="fas fa-ban"></i> Limit Full
+        </button>`;
+      }
+      return `<button class="send-mail-btn" id="send-btn-${empId}" onclick="sendCredentials('${empId}')" title="Mail bhejo (${count}/${MAX_MAIL_LIMIT})">
+        <i class="fas fa-paper-plane"></i> Send
+      </button>`;
+    }
 
     function selectRole(role) {
       selectedRole = role;
@@ -1419,13 +1472,8 @@
       document.getElementById(page + 'Page').classList.add('active');
 
       const titles = { 
-        dashboard: 'Dashboard', 
-        employees: 'Employees', 
-        attendance: 'Attendance', 
-        overtime: 'Overtime',
-        leave: 'Leave',
-        holidays: 'Holidays',
-        reports: 'Reports'
+        dashboard: 'Dashboard', employees: 'Employees', attendance: 'Attendance', 
+        overtime: 'Overtime', leave: 'Leave', holidays: 'Holidays', reports: 'Reports'
       };
       document.getElementById('pageTitle').textContent = titles[page] || page;
 
@@ -1433,9 +1481,6 @@
         case 'dashboard':  loadDashboard();   break;
         case 'employees':  loadEmployees();   break;
         case 'attendance': loadAttendance();  break;
-        case 'overtime':   break;
-        case 'leave':      break;
-        case 'holidays':   break;
         case 'reports':    loadDepartments(); break;
       }
     }
@@ -1447,15 +1492,12 @@
         document.getElementById('statPresent').textContent  = result.stats.presentToday;
         document.getElementById('statAbsent').textContent   = result.stats.absentToday;
         document.getElementById('statLate').textContent     = result.stats.lateToday;
-        
         document.getElementById('statOvertime').textContent = result.stats.overtimeToday;
         document.getElementById('statOvertimeNames').textContent = result.stats.overtimeNames || '-';
         document.getElementById('statOvertimeNames').title = result.stats.overtimeNames || '';
-        
         document.getElementById('statLeave').textContent = result.stats.leaveToday;
         document.getElementById('statLeaveNames').textContent = result.stats.leaveNames || '-';
         document.getElementById('statLeaveNames').title = result.stats.leaveNames || '';
-        
         document.getElementById('statHoliday').textContent = result.stats.holidayToday;
       }
       const att = await apiCall({ action: 'getRecentAttendance', limit: 10 });
@@ -1465,10 +1507,7 @@
     function viewPunchPhoto(index, type) {
       const record = currentRecentRecords[index];
       const photoData = type === 'in' ? record.punchInPhoto : record.punchOutPhoto;
-      if (!photoData) {
-        showToast('No photo available', 'error');
-        return;
-      }
+      if (!photoData) { showToast('No photo available', 'error'); return; }
       document.getElementById('punchPhotoView').src = photoData;
       document.getElementById('photoModal').classList.add('active');
     }
@@ -1476,10 +1515,7 @@
     function viewPunchPhotoAll(index, type) {
       const record = currentAllRecords[index];
       const photoData = type === 'in' ? record.punchInPhoto : record.punchOutPhoto;
-      if (!photoData) {
-        showToast('No photo available', 'error');
-        return;
-      }
+      if (!photoData) { showToast('No photo available', 'error'); return; }
       document.getElementById('punchPhotoView').src = photoData;
       document.getElementById('photoModal').classList.add('active');
     }
@@ -1499,12 +1535,8 @@
       tbody.innerHTML = records.map((r, index) => {
         const pinBtn = r.punchInPhoto ? `<button class="action-btn face" onclick="viewPunchPhoto(${index}, 'in')"><i class="fas fa-image"></i> View</button>` : '-';
         const poutBtn = r.punchOutPhoto ? `<button class="action-btn face" onclick="viewPunchPhoto(${index}, 'out')"><i class="fas fa-image"></i> View</button>` : '-';
-        
         let idDisplay = r.attendanceId || '-';
-        if (r.otId) {
-          idDisplay += `<br><span style="color:var(--primary); font-size:9px;">${r.otId}</span>`;
-        }
-
+        if (r.otId) idDisplay += `<br><span style="color:var(--primary); font-size:9px;">${r.otId}</span>`;
         return `
         <tr>
           <td style="font-size:10px; font-weight:600; color:var(--gray-700); line-height:1.2;">${idDisplay}</td>
@@ -1537,8 +1569,10 @@
         tbody.innerHTML = '<tr><td colspan="13"><div class="empty-state"><i class="fas fa-users"></i><p>No employees found!</p></div></td></tr>';
         return;
       }
-      tbody.innerHTML = employees.map(emp => `
-        <tr>
+      tbody.innerHTML = employees.map(emp => {
+        const mailCount = emp.mailCount || 0;
+        return `
+        <tr id="emp-row-${emp.empId}">
           <td>${emp.empId}</td>
           <td style="font-family: monospace; font-weight: 700; color: var(--primary);">${emp.password || '-'}</td>
           <td>${emp.name}</td>
@@ -1547,12 +1581,8 @@
           <td>${emp.designation}</td>
           <td>${emp.weekOff || 'Sunday'}</td>
           <td><span class="badge badge-${emp.status === 'Active' ? 'success' : 'danger'}">${emp.status}</span></td>
-          <td>
-            <button class="action-btn edit" style="padding: 6px 10px;" onclick="sendCredentials('${emp.empId}')" title="Send Email to Employee">
-              <i class="fas fa-paper-plane"></i> Send
-            </button>
-          </td>
-          <td><span class="badge badge-warning" style="font-size: 12px;" id="mail-count-${emp.empId}">${emp.mailCount || 0}</span></td>
+          <td id="send-cell-${emp.empId}">${renderSendBtn(emp.empId, mailCount)}</td>
+          <td id="count-cell-${emp.empId}">${renderMailCountBadge(mailCount)}</td>
           <td><span class="badge badge-info" id="face-${emp.empId}">Checking...</span></td>
           <td>
              <button class="action-btn face" id="view-face-btn-${emp.empId}" style="display:none; padding: 6px 10px;" onclick="viewFacePhoto('${emp.empId}')">
@@ -1566,8 +1596,10 @@
               <button class="action-btn delete" onclick="deleteEmployee('${emp.empId}')"><i class="fas fa-trash"></i></button>
             </div>
           </td>
-        </tr>`).join('');
+        </tr>`;
+      }).join('');
 
+      // Face check async
       employees.forEach(async emp => {
         const res = await apiCall({ action: 'checkFaceRegistered', empId: emp.empId });
         const badge = document.getElementById('face-' + emp.empId);
@@ -1624,25 +1656,22 @@
       }
     }
 
-    function closeEmployeeModal() {
-      document.getElementById('employeeModal').classList.remove('active');
-    }
+    function closeEmployeeModal() { document.getElementById('employeeModal').classList.remove('active'); }
 
     async function saveEmployee() {
       const editMode = document.getElementById('editMode').value === 'true';
       const empId    = document.getElementById('empIdInput').value;
       if (!empId) { showToast('Employee ID is required', 'error'); return; }
       const empData = {
-        empId:       empId,
-        name:        document.getElementById('empName').value,
-        email:       document.getElementById('empEmail').value,
-        phone:       document.getElementById('empPhone').value,
-        department:  document.getElementById('empDepartment').value,
+        empId, name: document.getElementById('empName').value,
+        email: document.getElementById('empEmail').value,
+        phone: document.getElementById('empPhone').value,
+        department: document.getElementById('empDepartment').value,
         designation: document.getElementById('empDesignation').value,
-        joinDate:    document.getElementById('empJoinDate').value,
-        password:    document.getElementById('empPassword').value,
-        weekOff:     document.getElementById('empWeekOff').value,
-        status:      document.getElementById('empStatus').value
+        joinDate: document.getElementById('empJoinDate').value,
+        password: document.getElementById('empPassword').value,
+        weekOff: document.getElementById('empWeekOff').value,
+        status: document.getElementById('empStatus').value
       };
       const result = editMode
         ? await apiCall({ action: 'updateEmployee', empId, empData: JSON.stringify(empData) })
@@ -1661,6 +1690,58 @@
       const result = await apiCall({ action: 'deleteEmployee', empId });
       if (result.success) { showToast(result.message, 'success'); loadEmployees(); }
       else showToast(result.message, 'error');
+    }
+
+    // ── SEND CREDENTIALS (INSTANT MAIL) ──
+    async function sendCredentials(empId) {
+      if (!confirm('Is mail bhejni hai?')) return;
+
+      // Disable button + show sending state
+      const btn = document.getElementById('send-btn-' + empId);
+      if (btn) {
+        btn.disabled = true;
+        btn.className = 'send-mail-btn sending';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+      }
+
+      showToast('Mail bhej raha hai...', '');
+
+      const result = await apiCall({ action: 'sendCredentials', empId });
+
+      if (result.success) {
+        // Update mail count badge
+        const newCount = result.mailCount;
+        const countCell = document.getElementById('count-cell-' + empId);
+        const sendCell  = document.getElementById('send-cell-' + empId);
+        if (countCell) countCell.innerHTML = renderMailCountBadge(newCount);
+        if (sendCell)  sendCell.innerHTML  = renderSendBtn(empId, newCount);
+
+        showToast(`✅ Mail sent! (${result.mailCount}/${result.maxLimit})`, 'success');
+      } else if (result.limitReached) {
+        // Limit full - update button to show locked
+        const sendCell = document.getElementById('send-cell-' + empId);
+        if (sendCell) sendCell.innerHTML = renderSendBtn(empId, MAX_MAIL_LIMIT);
+        showToast(`🔒 ${result.message}`, 'error');
+      } else {
+        // Re-enable button on failure
+        if (btn) {
+          btn.disabled = false;
+          btn.className = 'send-mail-btn';
+          btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
+        }
+        showToast(result.message || 'Mail send nahi hua', 'error');
+      }
+    }
+
+    async function viewFacePhoto(empId) {
+      showToast('Loading photo...', '');
+      const result = await apiCall({ action: 'getFacePhoto', empId });
+      if (result.success && result.photo) {
+        document.getElementById('punchPhotoView').src = result.photo;
+        document.getElementById('photoModal').classList.add('active');
+      } else {
+        showToast('Photo not found in database', 'error');
+      }
     }
 
     async function openFaceModal(empId, empName) {
@@ -1798,12 +1879,8 @@
       tbody.innerHTML = records.map((r, index) => {
         const pinBtn = r.punchInPhoto ? `<button class="action-btn face" onclick="viewPunchPhotoAll(${index}, 'in')"><i class="fas fa-image"></i> View</button>` : '-';
         const poutBtn = r.punchOutPhoto ? `<button class="action-btn face" onclick="viewPunchPhotoAll(${index}, 'out')"><i class="fas fa-image"></i> View</button>` : '-';
-        
         let idDisplay = r.attendanceId || '-';
-        if (r.otId) {
-          idDisplay += `<br><span style="color:var(--primary); font-size:9px;">${r.otId}</span>`;
-        }
-
+        if (r.otId) idDisplay += `<br><span style="color:var(--primary); font-size:9px;">${r.otId}</span>`;
         return `
         <tr>
           <td style="font-size:10px; font-weight:600; color:var(--gray-700); line-height:1.2;">${idDisplay}</td>
@@ -1823,7 +1900,7 @@
 
     async function loadDepartments() {
       if (currentUser.role === 'controller') return;
-      const result = await await apiCall({ action: 'getDepartments' });
+      const result = await apiCall({ action: 'getDepartments' });
       if (result.success) {
         const select = document.getElementById('reportDepartment');
         select.innerHTML = '<option value="All">All Departments</option>';
@@ -1861,7 +1938,7 @@
       const toast = document.getElementById('toast');
       toast.textContent = message;
       toast.className   = 'toast show ' + type;
-      setTimeout(() => toast.classList.remove('show'), 3000);
+      setTimeout(() => toast.classList.remove('show'), 3500);
     }
 
     function formatDate(date) { return date.toISOString().split('T')[0]; }
@@ -1869,37 +1946,6 @@
     function formatDisplayDate(dateStr) {
       if (!dateStr) return '-';
       return new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-    }
-
-    // Naye Functions: Send Credentials & View Photo
-    async function sendCredentials(empId) {
-      if (!confirm('Are you sure you want to send credentials to this employee?')) return;
-      showToast('Sending email...', '');
-      const result = await apiCall({ action: 'sendCredentials', empId: empId });
-      
-      if (result.success) {
-        showToast('Credentials sent successfully!', 'success');
-        
-        // UI par mail count instantly badhane ke liye:
-        const countElement = document.getElementById(`mail-count-${empId}`);
-        if (countElement) {
-          let currentCount = parseInt(countElement.innerText) || 0;
-          countElement.innerText = currentCount + 1;
-        }
-      } else {
-        showToast(result.message || 'Failed to send email', 'error');
-      }
-    }
-
-    async function viewFacePhoto(empId) {
-      showToast('Loading photo...', '');
-      const result = await apiCall({ action: 'getFacePhoto', empId: empId });
-      if (result.success && result.photo) {
-        document.getElementById('punchPhotoView').src = result.photo;
-        document.getElementById('photoModal').classList.add('active');
-      } else {
-        showToast('Photo not found in database', 'error');
-      }
     }
   </script>
 </body>
