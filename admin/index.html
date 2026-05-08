@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Punch Book - Admin Panel</title>
   
-  <!-- FAVICON -->
   <link rel="icon" type="image/png" sizes="512x512" href="punchbook_logo.png">
   <link rel="icon" type="image/png" sizes="192x192" href="punchbook_logo.png">
   <link rel="apple-touch-icon" sizes="180x180" href="punchbook_logo.png">
@@ -668,7 +667,6 @@
 </head>
 <body>
 
-  <!-- ════════════════════ LOGIN PAGE ════════════════════ -->
   <div class="login-container" id="loginPage">
     <div class="login-box">
       <div class="logo-container">
@@ -708,7 +706,6 @@
     </div>
   </div>
 
-  <!-- ════════════════════ APP ════════════════════ -->
   <div class="app-container" id="appContainer">
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -804,7 +801,6 @@
         </div>
       </div>
 
-      <!-- ── Dashboard ── -->
       <div class="page active" id="dashboardPage">
         
         <div class="stats-row-1">
@@ -861,7 +857,6 @@
         </div>
       </div>
 
-      <!-- ── Employees (Admin only) ── -->
       <div class="page" id="employeesPage">
         <div class="access-denied" id="empAccessDenied">
           <i class="fas fa-lock"></i>
@@ -888,12 +883,12 @@
                       <th>Week Off</th>
                       <th>Status</th>
                       <th>Send Mail</th>
-                      <th>Face</th>
+                      <th>Mail Count</th> <th>Face</th>
                       <th>View Photo</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
-                  <tbody id="employeesTable"><tr><td colspan="12" class="loading"><div class="spinner"></div></td></tr></tbody>
+                  <tbody id="employeesTable"><tr><td colspan="13" class="loading"><div class="spinner"></div></td></tr></tbody>
                 </table>
               </div>
             </div>
@@ -901,7 +896,6 @@
         </div>
       </div>
 
-      <!-- ── Attendance ── -->
       <div class="page" id="attendancePage">
         <div class="card">
           <div class="card-header"><h3>Attendance Records</h3></div>
@@ -935,7 +929,6 @@
         </div>
       </div>
 
-      <!-- ── Overtime ── -->
       <div class="page" id="overtimePage">
         <div class="card">
           <div class="card-header"><h3>Overtime Management</h3></div>
@@ -945,7 +938,6 @@
         </div>
       </div>
 
-      <!-- ── Leave ── -->
       <div class="page" id="leavePage">
         <div class="card">
           <div class="card-header"><h3>Leave Management</h3></div>
@@ -955,7 +947,6 @@
         </div>
       </div>
 
-      <!-- ── Holidays ── -->
       <div class="page" id="holidaysPage">
         <div class="card">
           <div class="card-header"><h3>Holidays List</h3></div>
@@ -965,7 +956,6 @@
         </div>
       </div>
 
-      <!-- ── Reports (Admin only) ── -->
       <div class="page" id="reportsPage">
         <div class="access-denied" id="rptAccessDenied">
           <i class="fas fa-lock"></i>
@@ -996,7 +986,6 @@
     </main>
   </div>
 
-  <!-- ── Photo View Modal ── -->
   <div class="modal-overlay" id="photoModal">
     <div class="modal" style="max-width: 400px;">
       <div class="modal-header">
@@ -1009,7 +998,6 @@
     </div>
   </div>
 
-  <!-- ── Employee Modal ── -->
   <div class="modal-overlay" id="employeeModal">
     <div class="modal">
       <div class="modal-header">
@@ -1063,7 +1051,6 @@
     </div>
   </div>
 
-  <!-- ── Change Password Modal ── -->
   <div class="modal-overlay" id="changePasswordModal">
     <div class="modal" style="max-width: 450px;">
       <div class="modal-header">
@@ -1098,7 +1085,6 @@
     </div>
   </div>
 
-  <!-- ── Face Modal ── -->
   <div class="modal-overlay" id="faceModal">
     <div class="modal">
       <div class="modal-header">
@@ -1131,7 +1117,6 @@
 
   <div class="toast" id="toast"></div>
 
-  <!-- ════════════════════ SCRIPT ════════════════════ -->
   <script>
     // ============== UPDATE THIS URL AFTER DEPLOYING A NEW VERSION ==============
     const API_URL = 'https://script.google.com/macros/s/AKfycbybiwZGXe3nfuZ-1BixZdj0b9ZKVluyarm3LQNfLm-atqaxCj6l1jWxatwYQKMG88je/exec';
@@ -1140,7 +1125,7 @@
     let selectedRole  = 'admin';
     let currentFaceEmpId    = null;
     let currentFaceEmpName = null;
-    let faceDescriptor     = null;
+    let faceDescriptor      = null;
     let capturedPhotoBase64 = null;
     let videoStream        = null;
     let faceDetectionInterval = null;
@@ -1549,7 +1534,7 @@
     function renderEmployees(employees) {
       const tbody = document.getElementById('employeesTable');
       if (!employees.length) {
-        tbody.innerHTML = '<tr><td colspan="12"><div class="empty-state"><i class="fas fa-users"></i><p>No employees found!</p></div></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="13"><div class="empty-state"><i class="fas fa-users"></i><p>No employees found!</p></div></td></tr>';
         return;
       }
       tbody.innerHTML = employees.map(emp => `
@@ -1567,6 +1552,7 @@
               <i class="fas fa-paper-plane"></i> Send
             </button>
           </td>
+          <td><span class="badge badge-warning" style="font-size: 12px;" id="mail-count-${emp.empId}">${emp.mailCount || 0}</span></td>
           <td><span class="badge badge-info" id="face-${emp.empId}">Checking...</span></td>
           <td>
              <button class="action-btn face" id="view-face-btn-${emp.empId}" style="display:none; padding: 6px 10px;" onclick="viewFacePhoto('${emp.empId}')">
@@ -1837,7 +1823,7 @@
 
     async function loadDepartments() {
       if (currentUser.role === 'controller') return;
-      const result = await apiCall({ action: 'getDepartments' });
+      const result = await await apiCall({ action: 'getDepartments' });
       if (result.success) {
         const select = document.getElementById('reportDepartment');
         select.innerHTML = '<option value="All">All Departments</option>';
@@ -1890,8 +1876,16 @@
       if (!confirm('Are you sure you want to send credentials to this employee?')) return;
       showToast('Sending email...', '');
       const result = await apiCall({ action: 'sendCredentials', empId: empId });
+      
       if (result.success) {
         showToast('Credentials sent successfully!', 'success');
+        
+        // UI par mail count instantly badhane ke liye:
+        const countElement = document.getElementById(`mail-count-${empId}`);
+        if (countElement) {
+          let currentCount = parseInt(countElement.innerText) || 0;
+          countElement.innerText = currentCount + 1;
+        }
       } else {
         showToast(result.message || 'Failed to send email', 'error');
       }
