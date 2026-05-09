@@ -36,6 +36,26 @@
 
     body { font-family: 'Inter', sans-serif; background: #1e3a8a; min-height: 100vh; overflow-x: hidden; }
 
+    /* ── GLOBAL BLUR LOADER ── */
+    .global-loader {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 100000;
+      display: none; /* hidden by default */
+      align-items: center;
+      justify-content: center;
+    }
+    .global-loader .spinner {
+      width: 65px; height: 65px;
+      border: 6px solid rgba(46, 111, 216, 0.15);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
     /* ── LOGIN ── */
     .login-container {
       min-height: 100vh;
@@ -536,6 +556,11 @@
   <!-- GLOBAL DATALIST FOR EMPLOYEE SEARCH -->
   <datalist id="employeeDatalist"></datalist>
 
+  <!-- ── GLOBAL BLUR LOADER ── -->
+  <div class="global-loader" id="globalLoader">
+    <div class="spinner"></div>
+  </div>
+
   <!-- ════════════════════ LOGIN PAGE ════════════════════ -->
   <div class="login-container" id="loginPage">
     <div class="login-box">
@@ -689,8 +714,8 @@
           <input type="date" id="dashFromDate" style="display:none;">
           <input type="date" id="dashToDate" style="display:none;">
           <input type="text" id="dashEmpSearch" list="employeeDatalist" placeholder="Search Employee by Name/ID...">
-          <button class="btn btn-primary" onclick="loadDashboard()"><i class="fas fa-search"></i> Apply</button>
-          <button class="btn btn-secondary" onclick="resetFilters('dash')"><i class="fas fa-undo"></i> Reset</button>
+          <button class="btn btn-primary" onclick="showSectionLoader(() => loadDashboard())"><i class="fas fa-search"></i> Apply</button>
+          <button class="btn btn-secondary" onclick="showSectionLoader(() => resetFilters('dash'))"><i class="fas fa-undo"></i> Reset</button>
         </div>
 
         <div class="stats-row-1">
@@ -831,8 +856,8 @@
                 <option value="Late">Late</option>
                 <option value="Overtime">Overtime</option>
               </select>
-              <button class="btn btn-primary" onclick="loadAttendance()"><i class="fas fa-search"></i> Apply</button>
-              <button class="btn btn-secondary" onclick="resetFilters('att')"><i class="fas fa-undo"></i> Reset</button>
+              <button class="btn btn-primary" onclick="showSectionLoader(() => loadAttendance())"><i class="fas fa-search"></i> Apply</button>
+              <button class="btn btn-secondary" onclick="showSectionLoader(() => resetFilters('att'))"><i class="fas fa-undo"></i> Reset</button>
             </div>
             <div class="table-responsive">
               <table>
@@ -877,8 +902,8 @@
               <input type="date" id="otFromDate" style="display:none;">
               <input type="date" id="otToDate" style="display:none;">
               <input type="text" id="otEmpSearch" list="employeeDatalist" placeholder="Search Employee...">
-              <button class="btn btn-primary" onclick="loadOvertime()"><i class="fas fa-search"></i> Apply</button>
-              <button class="btn btn-secondary" onclick="resetFilters('ot')"><i class="fas fa-undo"></i> Reset</button>
+              <button class="btn btn-primary" onclick="showSectionLoader(() => loadOvertime())"><i class="fas fa-search"></i> Apply</button>
+              <button class="btn btn-secondary" onclick="showSectionLoader(() => resetFilters('ot'))"><i class="fas fa-undo"></i> Reset</button>
             </div>
             <div class="table-responsive">
               <table>
@@ -923,8 +948,8 @@
               <input type="date" id="lvFromDate" style="display:none;">
               <input type="date" id="lvToDate" style="display:none;">
               <input type="text" id="lvEmpSearch" list="employeeDatalist" placeholder="Search Employee...">
-              <button class="btn btn-primary" onclick="loadLeaves()"><i class="fas fa-search"></i> Apply</button>
-              <button class="btn btn-secondary" onclick="resetFilters('lv')"><i class="fas fa-undo"></i> Reset</button>
+              <button class="btn btn-primary" onclick="showSectionLoader(() => loadLeaves())"><i class="fas fa-search"></i> Apply</button>
+              <button class="btn btn-secondary" onclick="showSectionLoader(() => resetFilters('lv'))"><i class="fas fa-undo"></i> Reset</button>
             </div>
             <div class="table-responsive">
               <table>
@@ -990,7 +1015,7 @@
                 <input type="date" id="reportFromDate">
                 <input type="date" id="reportToDate">
                 <select id="reportDepartment"><option value="All">All Departments</option></select>
-                <button class="btn btn-primary btn-sm" style="flex: 0 1 auto;" onclick="generateReport()"><i class="fas fa-sync"></i> Generate</button>
+                <button class="btn btn-primary btn-sm" style="flex: 0 1 auto;" onclick="showSectionLoader(() => generateReport())"><i class="fas fa-sync"></i> Generate</button>
               </div>
               <div class="table-responsive">
                 <table>
@@ -1238,6 +1263,20 @@
     let currentAllRecords = [];
     let currentOTRecords = [];
     let currentLeaveRecords = [];
+
+    // ---------- NEW: BLUR LOADER LOGIC ----------
+    function showSectionLoader(callback) {
+      const loader = document.getElementById('globalLoader');
+      loader.style.display = 'flex';
+      
+      // Execute the task right away
+      if (callback) callback();
+
+      // Ensure loader clears exactly after 1 second
+      setTimeout(() => {
+        loader.style.display = 'none';
+      }, 1000);
+    }
 
     // Helper functions for Date Ranges
     function getRangeDates(rangeType) {
@@ -1529,6 +1568,8 @@
       }
 
       applyRoleAccess();
+      
+      // Removed loader from initial app load/navigation
       loadDashboard();
     }
 
