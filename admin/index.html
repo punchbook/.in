@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Punch Book - Admin Panel</title>
   
+  <!-- FAVICON -->
   <link rel="icon" type="image/png" sizes="512x512" href="punchbook_logo.png">
   <link rel="icon" type="image/png" sizes="192x192" href="punchbook_logo.png">
   <link rel="apple-touch-icon" sizes="180x180" href="punchbook_logo.png">
@@ -712,6 +713,7 @@
 </head>
 <body>
 
+  <!-- ════════════════════ LOGIN PAGE ════════════════════ -->
   <div class="login-container" id="loginPage">
     <div class="login-box">
       <div class="logo-container">
@@ -751,6 +753,7 @@
     </div>
   </div>
 
+  <!-- ════════════════════ APP ════════════════════ -->
   <div class="app-container" id="appContainer">
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -846,6 +849,7 @@
         </div>
       </div>
 
+      <!-- ── Dashboard ── -->
       <div class="page active" id="dashboardPage">
         
         <div class="stats-row-1">
@@ -902,6 +906,7 @@
         </div>
       </div>
 
+      <!-- ── Employees (Admin only) ── -->
       <div class="page" id="employeesPage">
         <div class="access-denied" id="empAccessDenied">
           <i class="fas fa-lock"></i>
@@ -912,7 +917,10 @@
           <div class="card">
             <div class="card-header">
               <h3>All Employees</h3>
-              <button class="btn btn-primary" onclick="openAddEmployeeModal()" style="width: auto;"><i class="fas fa-plus"></i> Add Employee</button>
+              <!-- 🔴 FIXED ADD EMPLOYEE BUTTON -->
+              <button class="btn" style="background-color: var(--primary); color: white; width: max-content !important; padding: 10px 24px; flex-shrink: 0;" onclick="openAddEmployeeModal()">
+                <i class="fas fa-plus"></i> Add Employee
+              </button>
             </div>
             <div class="card-body">
               <div class="table-responsive">
@@ -927,7 +935,9 @@
                       <th>Designation</th>
                       <th>Week Off</th>
                       <th>Status</th>
-                      <th>Send Mail</th> <th>Mail Count</th> <th>Face</th>
+                      <th>Send Mail</th> <!-- SWAPPED: Send Mail is first -->
+                      <th>Mail Count</th> <!-- SWAPPED: Mail Count is next -->
+                      <th>Face</th>
                       <th>View Photo</th>
                       <th>Actions</th>
                     </tr>
@@ -940,6 +950,7 @@
         </div>
       </div>
 
+      <!-- ── Attendance ── -->
       <div class="page" id="attendancePage">
         <div class="card">
           <div class="card-header"><h3>Attendance Records</h3></div>
@@ -973,6 +984,7 @@
         </div>
       </div>
 
+      <!-- ── Overtime ── -->
       <div class="page" id="overtimePage">
         <div class="card">
           <div class="card-header"><h3>Overtime Management</h3></div>
@@ -982,6 +994,7 @@
         </div>
       </div>
 
+      <!-- ── Leave ── -->
       <div class="page" id="leavePage">
         <div class="card">
           <div class="card-header"><h3>Leave Management</h3></div>
@@ -991,6 +1004,7 @@
         </div>
       </div>
 
+      <!-- ── Holidays ── -->
       <div class="page" id="holidaysPage">
         <div class="card">
           <div class="card-header"><h3>Holidays List</h3></div>
@@ -1000,6 +1014,7 @@
         </div>
       </div>
 
+      <!-- ── Reports (Admin only) ── -->
       <div class="page" id="reportsPage">
         <div class="access-denied" id="rptAccessDenied">
           <i class="fas fa-lock"></i>
@@ -1030,6 +1045,7 @@
     </main>
   </div>
 
+  <!-- ── Photo View Modal ── -->
   <div class="modal-overlay" id="photoModal">
     <div class="modal" style="max-width: 400px;">
       <div class="modal-header">
@@ -1042,6 +1058,7 @@
     </div>
   </div>
 
+  <!-- ── Employee Modal ── -->
   <div class="modal-overlay" id="employeeModal">
     <div class="modal">
       <div class="modal-header">
@@ -1095,6 +1112,7 @@
     </div>
   </div>
 
+  <!-- ── Change Password Modal ── -->
   <div class="modal-overlay" id="changePasswordModal">
     <div class="modal" style="max-width: 450px;">
       <div class="modal-header">
@@ -1129,6 +1147,7 @@
     </div>
   </div>
 
+  <!-- ── Face Modal ── -->
   <div class="modal-overlay" id="faceModal">
     <div class="modal">
       <div class="modal-header">
@@ -1159,6 +1178,7 @@
     </div>
   </div>
 
+  <!-- ── Custom Mail Confirmation Modal ── -->
   <div class="modal-overlay" id="mailConfirmModal">
     <div class="modal" style="max-width: 380px; text-align: center;">
       <div class="modal-body" style="padding: 32px 24px 24px;">
@@ -1181,6 +1201,7 @@
 
   <div class="toast" id="toast"></div>
 
+  <!-- ════════════════════ SCRIPT ════════════════════ -->
   <script>
     // ============== UPDATE THIS URL AFTER DEPLOYING A NEW VERSION ==============
     const API_URL = 'https://script.google.com/macros/s/AKfycbybiwZGXe3nfuZ-1BixZdj0b9ZKVluyarm3LQNfLm-atqaxCj6l1jWxatwYQKMG88je/exec';
@@ -1612,11 +1633,14 @@
           <td>${emp.weekOff || 'Sunday'}</td>
           <td><span class="badge badge-${emp.status === 'Active' ? 'success' : 'danger'}">${emp.status}</span></td>
           
+          <!-- Send Mail -->
           <td>
             <button class="btn-send-mail" onclick="confirmSendMail('${emp.empId}')" title="Send Login Credentials">
               <i class="fas fa-paper-plane"></i> Send
             </button>
           </td>
+
+          <!-- Mail Count -->
           <td style="font-weight: 700; color: var(--primary);">${emp.mailCount || 0}</td>
 
           <td><span class="badge badge-info" id="face-${emp.empId}">Checking...</span></td>
@@ -1950,6 +1974,7 @@
       empIdForMail = null;
     }
 
+    // 🔴 AUTO-REFRESH FIX: Added loadEmployees() after successful email send
     document.getElementById('confirmSendMailBtn').addEventListener('click', async function() {
       if (!empIdForMail) return;
       const empId = empIdForMail;
@@ -1962,6 +1987,10 @@
       
       if (result.success) {
         showToast('✅ Credentials sent successfully!', 'success');
+        
+        // Background Table Refresh logic (Turant Mail Count update karne ke liye)
+        loadEmployees();
+        
       } else {
         showToast('❌ ' + (result.message || 'Failed to send email'), 'error');
       }
