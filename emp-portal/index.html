@@ -50,6 +50,7 @@
     .form-group label { display: block; margin-bottom: 6px; color: var(--gray-700); font-weight: 500; font-size: 14px; }
     .form-group input, .form-group select { width: 100%; padding: 12px 16px; border: 1px solid var(--gray-300); border-radius: 10px; font-size: 14px; transition: all 0.2s; }
     .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+    .form-group input[readonly] { background-color: var(--gray-100); color: var(--gray-700); font-weight: 600; cursor: not-allowed; }
     
     .btn { padding: 12px 24px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
     .btn-primary { background: var(--primary); color: white; width: 100%; }
@@ -170,7 +171,7 @@
     
     .attendance-table { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
     table { width: 100%; border-collapse: collapse; min-width: 500px; }
-    th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--gray-200); font-size: 14px; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--gray-200); font-size: 14px; white-space: nowrap; }
     th { background: var(--gray-50); font-weight: 600; color: var(--gray-700); font-size: 12px; text-transform: uppercase; }
     .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
     .badge-success { background: #D1FAE5; color: #059669; }
@@ -324,7 +325,8 @@
       <div class="tabs">
         <button class="tab-btn active" data-tab="dashboard"><i class="fas fa-home"></i> Dashboard</button>
         <button class="tab-btn" data-tab="attendance"><i class="fas fa-calendar"></i> Attendance</button>
-        <!-- NEW HOLIDAY TAB -->
+        <!-- NEW LEAVE TAB -->
+        <button class="tab-btn" data-tab="leave"><i class="fas fa-calendar-minus"></i> Leave</button>
         <button class="tab-btn" data-tab="holiday"><i class="fas fa-umbrella-beach"></i> Holidays</button>
         <button class="tab-btn" data-tab="profile"><i class="fas fa-user"></i> Profile</button>
         <button class="tab-btn" data-tab="settings"><i class="fas fa-cog"></i> Settings</button>
@@ -392,7 +394,58 @@
         </div>
       </div>
 
-      <!-- NEW HOLIDAY TAB CONTENT -->
+      <!-- ================= LEAVE TAB CONTENT ================= -->
+      <div class="tab-content" id="leaveTab">
+        
+        <!-- Leave Apply Form -->
+        <div class="settings-card" style="margin-bottom: 24px;">
+          <h3><i class="fas fa-paper-plane"></i> Apply for Leave</h3>
+          <form id="applyLeaveForm">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label>From Date</label>
+                <input type="date" id="leaveFromDate" required onchange="calculateLeaveDays()">
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label>To Date</label>
+                <input type="date" id="leaveToDate" required onchange="calculateLeaveDays()">
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label>Total Days</label>
+                <input type="number" id="leaveTotalDays" readonly>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary" id="btnApplyLeave" style="width: auto;">Submit Leave Request</button>
+          </form>
+        </div>
+
+        <!-- Leave History Table -->
+        <div class="stats-section">
+          <div class="stats-header">
+            <h3><i class="fas fa-history"></i> My Leave History</h3>
+          </div>
+          <div class="attendance-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Applied On</th>
+                  <th>Date Range</th>
+                  <th>Days</th>
+                  <th>Status</th>
+                  <th>CL</th>
+                  <th>SL</th>
+                  <th>EL</th>
+                  <th>Other</th>
+                </tr>
+              </thead>
+              <tbody id="myLeavesTable">
+                <tr><td colspan="8" class="loading"><div class="spinner"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       <div class="tab-content" id="holidayTab">
         <div class="stats-section">
           <div class="stats-header">
@@ -533,7 +586,7 @@
     async function apiCall(params) {
       try {
         let response;
-        if (params.action === 'changePassword' || params.action === 'saveFaceData') {
+        if (params.action === 'changePassword' || params.action === 'saveFaceData' || params.action === 'applyLeave') {
           response = await fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -559,6 +612,10 @@
       switchLoginMode('face');
       document.getElementById('loginForm').addEventListener('submit', handleLogin);
       document.getElementById('passwordForm').addEventListener('submit', handlePasswordChange);
+      
+      // Leave Submit Event
+      document.getElementById('applyLeaveForm').addEventListener('submit', submitLeave);
+
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', function() { switchTab(this.dataset.tab); });
       });
@@ -573,7 +630,8 @@
       document.getElementById(tab + 'Tab').classList.add('active');
       
       if (tab === 'attendance') loadAttendance();
-      if (tab === 'holiday') loadHolidays(); // NEW HOLIDAY LOAD
+      if (tab === 'leave') loadMyLeaves(); 
+      if (tab === 'holiday') loadHolidays(); 
     }
 
     // ==============================================================
@@ -1053,7 +1111,6 @@
       if (result.success) renderAttendanceTable(result.records, 'recentActivityTable');
     }
 
-    // NEW FUNCTION TO LOAD HOLIDAYS
     async function loadHolidays() {
       const tbody = document.getElementById('holidayTable');
       tbody.innerHTML = '<tr><td colspan="3" class="loading"><div class="spinner"></div></td></tr>';
@@ -1077,6 +1134,99 @@
       }
     }
 
+    // ==========================================
+    // LEAVE MANAGEMENT (NEW)
+    // ==========================================
+    function calculateLeaveDays() {
+      const from = document.getElementById('leaveFromDate').value;
+      const to = document.getElementById('leaveToDate').value;
+      
+      if (from && to) {
+        const d1 = new Date(from);
+        const d2 = new Date(to);
+        d1.setHours(0,0,0,0);
+        d2.setHours(0,0,0,0);
+        
+        if (d2 < d1) {
+          document.getElementById('leaveTotalDays').value = '';
+          showToast('To Date cannot be earlier than From Date', 'error');
+        } else {
+          const diffTime = Math.abs(d2 - d1);
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both days
+          document.getElementById('leaveTotalDays').value = diffDays;
+        }
+      }
+    }
+
+    async function submitLeave(e) {
+      e.preventDefault();
+      const fromDate = document.getElementById('leaveFromDate').value;
+      const toDate = document.getElementById('leaveToDate').value;
+      const days = document.getElementById('leaveTotalDays').value;
+
+      if (!fromDate || !toDate || days <= 0) {
+        return showToast('Invalid dates selected', 'error');
+      }
+
+      const btn = document.getElementById('btnApplyLeave');
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner" style="width:16px;height:16px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:8px;border-top-color:white;"></div> Submitting...';
+
+      const result = await apiCall({
+        action: 'applyLeave',
+        empId: currentEmployee.empId,
+        empName: currentEmployee.name,
+        fromDate: fromDate,
+        toDate: toDate,
+        days: days
+      });
+
+      btn.disabled = false;
+      btn.innerHTML = 'Submit Leave Request';
+
+      if (result.success) {
+        showToast('Leave applied successfully!', 'success');
+        document.getElementById('applyLeaveForm').reset();
+        loadMyLeaves(); // Reload history
+      } else {
+        showToast(result.message, 'error');
+      }
+    }
+
+    async function loadMyLeaves() {
+      const tbody = document.getElementById('myLeavesTable');
+      tbody.innerHTML = '<tr><td colspan="8" class="loading"><div class="spinner"></div></td></tr>';
+      
+      const result = await apiCall({ action: 'getMyLeaves', empId: currentEmployee.empId });
+      
+      if (result.success) {
+        if (result.leaves.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><i class="fas fa-calendar-times"></i><p>No leave history found</p></td></tr>';
+          return;
+        }
+        
+        tbody.innerHTML = result.leaves.map(l => {
+          let badge = '<span class="badge badge-warning">Applied</span>';
+          const st = String(l.status).toLowerCase().trim();
+          if (st === 'approved') badge = '<span class="badge badge-success">Approved</span>';
+          if (st === 'rejected') badge = '<span class="badge badge-danger">Rejected</span>';
+
+          return `<tr>
+            <td style="font-size:11px; color:var(--gray-500);">${formatDisplayDate(l.appliedOn)}</td>
+            <td style="font-weight:600; color:var(--primary);">${formatDisplayDate(l.fromDate)} <span style="color:var(--gray-400); font-weight:normal; font-size:11px; padding:0 4px;">to</span> ${formatDisplayDate(l.toDate)}</td>
+            <td style="font-weight:700;">${l.days}</td>
+            <td>${badge}</td>
+            <td style="font-weight:600; color:var(--gray-700);">${l.cl}</td>
+            <td style="font-weight:600; color:var(--gray-700);">${l.sl}</td>
+            <td style="font-weight:600; color:var(--gray-700);">${l.el}</td>
+            <td style="font-weight:600; color:var(--gray-700);">${l.other}</td>
+          </tr>`;
+        }).join('');
+      } else {
+        tbody.innerHTML = `<tr><td colspan="8" class="empty-state"><p>Error loading leaves.</p></td></tr>`;
+      }
+    }
+
     function renderAttendanceTable(records, tableId) {
       const tbody = document.getElementById(tableId);
       if (records.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><i class="fas fa-calendar-times"></i><p>No records found</p></td></tr>'; return; }
@@ -1093,7 +1243,15 @@
     }
 
     function showToast(message, type) { const toast = document.getElementById('toast'); toast.textContent = message; toast.className = 'toast show ' + type; setTimeout(() => toast.classList.remove('show'), 3000); }
+    
+    // Yahan sirf date string formatting ke liye simple function hai.
     function formatDate(dateStr) { if (!dateStr) return '-'; return new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }); }
+    
+    // Detailed format jaise "02 May 2026"  
+    function formatDisplayDate(dateStr) { 
+      if (!dateStr) return '-'; 
+      return new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }); 
+    }
   </script>
 </body>
 </html>
