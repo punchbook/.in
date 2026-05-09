@@ -749,7 +749,7 @@
       </form>
 
       <p id="loginHint" style="text-align:center;margin-top:18px;color:var(--gray-500);font-size:13px;">
-       Enter your admin credentials to continue
+        Enter your admin credentials to continue
       </p>
     </div>
   </div>
@@ -997,9 +997,28 @@
       <!-- ── Leave ── -->
       <div class="page" id="leavePage">
         <div class="card">
-          <div class="card-header"><h3>Leave Management</h3></div>
+          <div class="card-header">
+            <h3>Leave Management</h3>
+          </div>
           <div class="card-body">
-            <div class="empty-state"><i class="fas fa-calendar-minus"></i><p>Leave features coming soon...</p></div>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Applied On</th>
+                    <th>Emp ID</th>
+                    <th>Employee Name</th>
+                    <th>From Date</th>
+                    <th>To Date</th>
+                    <th>Total Days</th>
+                    <th>CL / SL / EL / Other</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="leaveTable"><tr><td colspan="9" class="loading"><div class="spinner"></div></td></tr></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -1007,9 +1026,23 @@
       <!-- ── Holidays ── -->
       <div class="page" id="holidaysPage">
         <div class="card">
-          <div class="card-header"><h3>Holidays List</h3></div>
+          <div class="card-header">
+            <h3>Holidays List</h3>
+          </div>
           <div class="card-body">
-            <div class="empty-state"><i class="fas fa-umbrella-beach"></i><p>Holidays features coming soon...</p></div>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Day</th>
+                    <th>Holiday Name</th>
+                    <th>Category</th>
+                  </tr>
+                </thead>
+                <tbody id="holidaysTable"><tr><td colspan="4" class="loading"><div class="spinner"></div></td></tr></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -1198,6 +1231,64 @@
       </div>
     </div>
   </div>
+  
+  <!-- ── LEAVE APPROVAL MODAL ── -->
+  <div class="modal-overlay" id="leaveApprovalModal">
+    <div class="modal" style="max-width: 500px;">
+      <div class="modal-header">
+        <h3>Review Leave Application</h3>
+        <button class="modal-close" onclick="closeLeaveModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="leaveRowIndex">
+        <div class="form-grid">
+          <div class="form-group full-width">
+             <label style="font-size: 11px; color: var(--gray-500);">Employee Details</label>
+             <div style="font-size: 15px; font-weight: 600; color: var(--primary);" id="leaveEmpDetails">EmpID - Name</div>
+             <div style="font-size: 12px; color: var(--gray-500); margin-top: 4px;" id="leaveDateRange">From - To</div>
+          </div>
+          <div class="form-group">
+             <label>Total Requested Days</label>
+             <input type="number" id="leaveTotalDays" readonly style="background-color: var(--gray-100); font-weight: 700; color: var(--gray-900);">
+          </div>
+          <div class="form-group">
+             <label>Status Action *</label>
+             <select id="leaveActionStatus" style="font-weight: 600; border: 2px solid var(--primary);">
+               <option value="Applied">Keep Pending</option>
+               <option value="Approved">Approve</option>
+               <option value="Rejected">Reject</option>
+             </select>
+          </div>
+          <div class="form-group">
+             <label>CL (Casual Leave)</label>
+             <input type="number" id="leaveCL" value="0" min="0" oninput="calculateLeaves()">
+          </div>
+          <div class="form-group">
+             <label>SL (Sick Leave)</label>
+             <input type="number" id="leaveSL" value="0" min="0" oninput="calculateLeaves()">
+          </div>
+          <div class="form-group">
+             <label>EL (Earned Leave)</label>
+             <input type="number" id="leaveEL" value="0" min="0" oninput="calculateLeaves()">
+          </div>
+          <div class="form-group">
+             <label>Other Leave</label>
+             <input type="number" id="leaveOther" value="0" min="0" oninput="calculateLeaves()">
+          </div>
+        </div>
+        <div style="margin-top:16px; padding: 12px; border-radius: 8px; background: var(--gray-50); border: 1px dashed var(--gray-300); display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 13px; color: var(--gray-700); font-weight: 500;">Total Distributed Days:</span>
+          <span style="font-size: 16px; font-weight: 800; color: var(--primary);"><span id="leaveDistributedSum">0</span> / <span id="leaveTargetDays">0</span></span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeLeaveModal()">Cancel</button>
+        <button class="btn btn-primary" style="width:auto;" onclick="saveLeaveApproval()">
+          <i class="fas fa-check-circle"></i> Save & Update
+        </button>
+      </div>
+    </div>
+  </div>
 
   <div class="toast" id="toast"></div>
 
@@ -1217,6 +1308,7 @@
     
     let currentRecentRecords = [];
     let currentAllRecords = [];
+    let currentLeaveRecords = [];
 
     function selectRole(role) {
       selectedRole = role;
@@ -1519,8 +1611,8 @@
         case 'employees':  loadEmployees();   break;
         case 'attendance': loadAttendance();  break;
         case 'overtime':   break;
-        case 'leave':      break;
-        case 'holidays':   break;
+        case 'leave':      loadLeaves();      break;
+        case 'holidays':   loadHolidays();    break;
         case 'reports':    loadDepartments(); break;
       }
     }
@@ -1954,6 +2046,183 @@
           <td><span class="badge badge-warning">${r.lateDays}</span></td>
           <td>${r.totalHours} hrs</td><td>${r.avgHours} hrs</td>
         </tr>`).join('');
+    }
+    
+    // ============ HOLIDAY HELPER ============
+    async function loadHolidays() {
+      const tbody = document.getElementById('holidaysTable');
+      tbody.innerHTML = '<tr><td colspan="4" class="loading"><div class="spinner"></div></td></tr>';
+      
+      const result = await apiCall({ action: 'getHolidays' });
+      if (result.success) {
+        renderHolidays(result.holidays);
+      } else {
+        tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><p>${result.message}</p></div></td></tr>`;
+      }
+    }
+
+    function renderHolidays(holidays) {
+      const tbody = document.getElementById('holidaysTable');
+      if (!holidays || !holidays.length) {
+        tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state"><i class="fas fa-umbrella-beach"></i><p>No holidays found!</p></div></td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = holidays.map(h => {
+        return `
+        <tr>
+          <td style="font-weight: 600; color: var(--gray-700);">${formatDisplayDate(h.date)}</td>
+          <td>${h.day}</td>
+          <td style="color: var(--primary); font-weight: 600;">${h.name}</td>
+          <td><span class="badge badge-info">${h.category || '-'}</span></td>
+        </tr>`;
+      }).join('');
+    }
+
+    // ============ LEAVE MANAGEMENT ============
+    async function loadLeaves() {
+      const tbody = document.getElementById('leaveTable');
+      tbody.innerHTML = '<tr><td colspan="9" class="loading"><div class="spinner"></div></td></tr>';
+      
+      const result = await apiCall({ action: 'getAllLeaves' });
+      if (result.success) {
+        currentLeaveRecords = result.leaves;
+        renderLeaves(result.leaves);
+      } else {
+        tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><p>${result.message}</p></div></td></tr>`;
+      }
+    }
+
+    function renderLeaves(leaves) {
+      const tbody = document.getElementById('leaveTable');
+      if (!leaves || !leaves.length) {
+        tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><i class="fas fa-calendar-minus"></i><p>No leave applications found!</p></div></td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = leaves.map((l, index) => {
+        let statusBadge = '';
+        const lowerStatus = String(l.leaveStatus).toLowerCase().trim();
+        
+        if (lowerStatus === 'approved') statusBadge = '<span class="badge badge-success">Approved</span>';
+        else if (lowerStatus === 'rejected') statusBadge = '<span class="badge badge-danger">Rejected</span>';
+        else statusBadge = '<span class="badge badge-warning">Applied</span>';
+
+        const distribution = `${l.cl} / ${l.sl} / ${l.el} / ${l.otherLeave}`;
+
+        return `
+        <tr>
+          <td style="color: var(--gray-500); font-size: 11px;">${formatDisplayDate(l.date)}</td>
+          <td style="font-weight:600;">${l.empId}</td>
+          <td>${l.empName}</td>
+          <td style="color: var(--primary);">${formatDisplayDate(l.fromDate)}</td>
+          <td style="color: var(--primary);">${formatDisplayDate(l.toDate)}</td>
+          <td style="font-weight:700;">${l.days}</td>
+          <td style="font-size: 11px;">${distribution}</td>
+          <td>${statusBadge}</td>
+          <td>
+            <button class="action-btn edit" onclick="openLeaveModal(${index})"><i class="fas fa-edit"></i> Edit</button>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    function openLeaveModal(index) {
+      const record = currentLeaveRecords[index];
+      
+      document.getElementById('leaveRowIndex').value = record.rowIndex;
+      document.getElementById('leaveEmpDetails').textContent = `${record.empId} - ${record.empName}`;
+      document.getElementById('leaveDateRange').textContent = `${formatDisplayDate(record.fromDate)} To ${formatDisplayDate(record.toDate)}`;
+      
+      document.getElementById('leaveTotalDays').value = record.days;
+      document.getElementById('leaveTargetDays').textContent = record.days;
+      
+      document.getElementById('leaveCL').value = record.cl || 0;
+      document.getElementById('leaveSL').value = record.sl || 0;
+      document.getElementById('leaveEL').value = record.el || 0;
+      document.getElementById('leaveOther').value = record.otherLeave || 0;
+      
+      const st = String(record.leaveStatus).trim();
+      document.getElementById('leaveActionStatus').value = (st === 'Approved' || st === 'Rejected') ? st : 'Applied';
+      
+      calculateLeaves();
+      document.getElementById('leaveApprovalModal').classList.add('active');
+    }
+
+    function calculateLeaves() {
+      const cl = parseInt(document.getElementById('leaveCL').value) || 0;
+      const sl = parseInt(document.getElementById('leaveSL').value) || 0;
+      const el = parseInt(document.getElementById('leaveEL').value) || 0;
+      const other = parseInt(document.getElementById('leaveOther').value) || 0;
+      
+      const sum = cl + sl + el + other;
+      const displaySpan = document.getElementById('leaveDistributedSum');
+      const targetSpan = document.getElementById('leaveTargetDays');
+      
+      displaySpan.textContent = sum;
+      
+      const target = parseInt(targetSpan.textContent) || 0;
+      const statusAction = document.getElementById('leaveActionStatus').value;
+      
+      // Update logic: Only red if sum is GREATER than requested days
+      if (statusAction === 'Approved' && sum > target) {
+        displaySpan.style.color = "var(--danger)"; // Exceeds target
+      } else if (statusAction === 'Approved' && sum < target) {
+        displaySpan.style.color = "var(--warning)"; // Less than target (Valid but shown as warning color)
+      } else {
+        displaySpan.style.color = "var(--primary)"; // Exactly target or not approved yet
+      }
+    }
+
+    // Run calculate when user changes status dropdown to trigger error colors instantly
+    document.getElementById('leaveActionStatus').addEventListener('change', calculateLeaves);
+
+    async function saveLeaveApproval() {
+      const rowIndex = document.getElementById('leaveRowIndex').value;
+      const cl = parseInt(document.getElementById('leaveCL').value) || 0;
+      const sl = parseInt(document.getElementById('leaveSL').value) || 0;
+      const el = parseInt(document.getElementById('leaveEL').value) || 0;
+      const other = parseInt(document.getElementById('leaveOther').value) || 0;
+      const leaveStatus = document.getElementById('leaveActionStatus').value; // Applied, Approved, Rejected
+      const totalDaysTarget = parseInt(document.getElementById('leaveTotalDays').value) || 0;
+      
+      // Validation Check: Cannot approve MORE days than requested
+      if (leaveStatus === 'Approved') {
+        const sum = cl + sl + el + other;
+        if (sum > totalDaysTarget) {
+          showToast(`Cannot allocate more days (${sum}) than requested (${totalDaysTarget}).`, 'error');
+          return;
+        }
+      }
+
+      // Approved string mapping
+      const approvedVal = (leaveStatus === 'Approved') ? 'Yes' : 'No';
+
+      showToast('Saving leave...', '');
+
+      const result = await apiCall({
+        action: 'updateLeave',
+        rowIndex: rowIndex,
+        cl: cl,
+        sl: sl,
+        el: el,
+        otherLeave: other,
+        leaveStatus: leaveStatus,
+        approved: approvedVal
+      });
+
+      if (result.success) {
+        showToast('✅ Leave successfully updated', 'success');
+        closeLeaveModal();
+        loadLeaves();
+        // Since we changed approval status, we should refresh dashboard count if we go back
+      } else {
+        showToast(result.message || 'Error saving leave', 'error');
+      }
+    }
+
+    function closeLeaveModal() {
+      document.getElementById('leaveApprovalModal').classList.remove('active');
     }
 
     function showToast(message, type) {
