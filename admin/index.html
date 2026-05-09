@@ -6,48 +6,37 @@
   <title>Punch Book - Admin Panel</title>
   
   <!-- FAVICON -->
-    <link rel="icon" type="image/png" href="punchbook_logo.png">
-    <link rel="apple-touch-icon" href="punchbook_logo.png">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-    
-    <style>
-      *{
-        margin:0;
-        padding:0;
-        box-sizing:border-box;
-      }
-    
-      :root{
-        --primary:#2E6FD8;
-        --primary-dark:#1A56B8;
-        --primary-light:#5B9AF5;
-        --primary-xlight:#EBF3FF;
-        --success:#10B981;
-        --warning:#F59E0B;
-        --danger:#EF4444;
-        --gray-50:#F9FAFB;
-        --gray-100:#F3F4F6;
-        --gray-200:#E5E7EB;
-        --gray-300:#D1D5DB;
-        --gray-500:#6B7280;
-        --gray-700:#374151;
-        --gray-900:#111827;
-        --controller:#2E6FD8;
-        --controller-dark:#1A56B8;
-      }
-    
-      body{
-        font-family:'Inter',sans-serif;
-        background:#1e3a8a;
-        min-height:100vh;
-        overflow-x:hidden;
-      }
+  <link rel="icon" type="image/png" sizes="512x512" href="punchbook_logo.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="punchbook_logo.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="punchbook_logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  
-  /* ── LOGIN ── */
+    :root {
+      --primary: #2E6FD8;
+      --primary-dark: #1A56B8;
+      --primary-light: #5B9AF5;
+      --primary-xlight: #EBF3FF;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --gray-50: #F9FAFB;
+      --gray-100: #F3F4F6;
+      --gray-200: #E5E7EB;
+      --gray-300: #D1D5DB;
+      --gray-500: #6B7280;
+      --gray-700: #374151;
+      --gray-900: #111827;
+      --controller: #2E6FD8;
+      --controller-dark: #1A56B8;
+    }
+
+    body { font-family: 'Inter', sans-serif; background: #1e3a8a; min-height: 100vh; overflow-x: hidden; }
+
+    /* ── LOGIN ── */
     .login-container {
       min-height: 100vh;
       display: flex;
@@ -196,49 +185,51 @@
     .btn-secondary { background: var(--gray-200); color: var(--gray-700); }
     .btn-sm { padding: 8px 16px; font-size: 13px; }
 
-    /* ── ENHANCED TABLE BUTTONS ── */
+    /* ── ENHANCED TABLE BUTTONS (MODERN LOOK) ── */
     .btn-send-mail {
-      background: linear-gradient(135deg, #DBEAFE 0%, #EFF6FF 100%);
-      color: var(--primary);
+      background: #EFF6FF;
+      color: #2563EB;
       border: 1px solid #BFDBFE;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 12px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
       font-weight: 600;
       transition: all 0.2s ease;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
     }
     .btn-send-mail:hover:not(:disabled) {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
+      background: #DBEAFE;
+      color: #1D4ED8;
+      border-color: #93C5FD;
       transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(46, 111, 216, 0.2);
+      box-shadow: 0 4px 8px rgba(37, 99, 235, 0.15);
     }
 
     .btn-view-photo {
-      background: linear-gradient(135deg, #D1FAE5 0%, #ECFDF5 100%);
+      background: #ECFDF5;
       color: #059669;
       border: 1px solid #A7F3D0;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 12px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
       font-weight: 600;
       transition: all 0.2s ease;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
     }
     .btn-view-photo:hover {
-      background: #059669;
-      color: white;
-      border-color: #059669;
+      background: #D1FAE5;
+      color: #047857;
+      border-color: #6EE7B7;
       transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(16, 185, 129, 0.2);
+      box-shadow: 0 4px 8px rgba(5, 150, 105, 0.15);
     }
 
     /* ── APP LAYOUT ── */
@@ -253,7 +244,7 @@
     }
 
     /* ════════════════════════════════════════════
-       SIDEBAR
+       SIDEBAR & COLLAPSE LOGIC
        ════════════════════════════════════════════ */
     .sidebar {
       position: fixed; left: 0; top: 0;
@@ -263,72 +254,33 @@
       border-right: none;
       padding: 20px 16px;
       z-index: 100;
-      transition: transform 0.3s ease;
+      transition: width 0.3s ease, transform 0.3s ease;
       box-shadow: 4px 0 20px rgba(15,37,87,0.35);
+      overflow-x: hidden;
+      white-space: nowrap;
     }
     .sidebar::after {
-      content: '';
-      position: absolute;
-      top: 10%; right: 0;
-      width: 3px;
-      height: 80%;
-      border-radius: 2px;
+      content: ''; position: absolute; top: 10%; right: 0;
+      width: 3px; height: 80%; border-radius: 2px;
       background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.55), rgba(121,181,254,0.8), rgba(255,255,255,0.55), transparent);
       pointer-events: none;
     }
 
-    body.sidebar-collapsed .sidebar {
-      transform: translateX(-100%);
-    }
-
     .sidebar-logo {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0 0 12px 0; 
-      margin-bottom: 24px;
-      text-align: center;
-      background: rgba(255,255,255,0.12);
-      border-radius: 12px;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 0 0 12px 0; margin-bottom: 24px; text-align: center;
+      background: rgba(255,255,255,0.12); border-radius: 12px;
       border: 1px solid rgba(255,255,255,0.18);
-      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
-      overflow: hidden;
-      backdrop-filter: blur(4px);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.2); overflow: hidden; backdrop-filter: blur(4px);
+      transition: all 0.3s ease;
     }
-
     .sidebar-logo img {
-      width: 125px; 
-      height: auto;
-      display: block;
-      margin-top: 10px; 
-      margin-bottom: -6px; 
-      filter: drop-shadow(0 6px 8px rgba(0,0,0,0.35));
-      transition: transform 0.3s ease;
-      position: relative;
-      z-index: 2;
+      width: 125px; height: auto; display: block; margin-top: 10px; margin-bottom: -6px; 
+      filter: drop-shadow(0 6px 8px rgba(0,0,0,0.35)); transition: all 0.3s ease;
       image-rendering: -webkit-optimize-contrast;
     }
-
-    .sidebar-logo img:hover {
-      transform: translateY(-2px) scale(1.05);
-    }
-
-    .sidebar-logo h2 {
-      font-size: 16px; 
-      font-weight: 800;
-      color: #ffffff;
-      letter-spacing: 0.2px;
-      margin: 0;
-      position: relative;
-      z-index: 1;
-    }
-
-    .sidebar-logo p {
-      color: rgba(255,255,255,0.75);
-      font-size: 11px; 
-      font-weight: 600;
-      margin-top: 0px; 
-    }
+    .sidebar-logo h2 { font-size: 16px; font-weight: 800; color: #ffffff; margin: 0; transition: opacity 0.2s; }
+    .sidebar-logo p { color: rgba(255,255,255,0.75); font-size: 11px; font-weight: 600; margin-top: 0px; transition: opacity 0.2s; }
 
     .nav-menu { list-style: none; }
     .nav-item { margin-bottom: 4px; }
@@ -336,200 +288,96 @@
       display: flex; align-items: center; gap: 12px;
       padding: 10px 14px; color: rgba(255,255,255,0.70);
       text-decoration: none; border-radius: 8px;
-      transition: all 0.2s; cursor: pointer;
-      font-size: 14px;
+      transition: all 0.2s; cursor: pointer; font-size: 14px;
     }
     .nav-link:hover { background: rgba(255,255,255,0.12); color: #ffffff; }
     .nav-link.active { background: rgba(255,255,255,0.22); color: white; font-weight: 600; box-shadow: 0 2px 10px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.25); }
-    .nav-link i { width: 20px; font-size: 16px; }
+    .nav-link i { width: 20px; font-size: 16px; text-align: center; }
+    .nav-link span { transition: opacity 0.2s; }
 
-    .nav-link.locked {
-      opacity: 0.3;
-      cursor: not-allowed;
-      pointer-events: none;
+    /* ICON-ONLY MODE (DESKTOP) */
+    @media (min-width: 769px) {
+      body.sidebar-collapsed .sidebar { width: 75px; }
+      body.sidebar-collapsed .main-content { margin-left: 75px; }
+      
+      body.sidebar-collapsed .sidebar-logo h2,
+      body.sidebar-collapsed .sidebar-logo p,
+      body.sidebar-collapsed .nav-link span,
+      body.sidebar-collapsed .logout-text { display: none; }
+      
+      body.sidebar-collapsed .sidebar-logo {
+        padding: 10px 5px; background: transparent; border-color: transparent; box-shadow: none;
+      }
+      body.sidebar-collapsed .sidebar-logo img {
+        width: 36px; margin: 0 auto;
+      }
+      
+      body.sidebar-collapsed .nav-link { justify-content: center; padding: 12px 0; }
+      body.sidebar-collapsed .nav-link i { margin-right: 0; font-size: 20px; width: auto; }
+      
+      body.sidebar-collapsed .sidebar-bottom { left: 12px !important; right: 12px !important; }
+      body.sidebar-collapsed .sidebar-bottom button { padding: 12px 0 !important; justify-content: center; }
+      body.sidebar-collapsed .sidebar-bottom button i { margin-right: 0 !important; font-size: 18px; }
     }
 
     .main-content { 
-      margin-left: 230px; 
-      padding: 24px; 
-      min-height: 100vh; 
-      transition: margin-left 0.3s ease;
-      position: relative;
-      background: linear-gradient(160deg, #1a3580 0%, #2455b8 40%, #3b82f6 75%, #79B5FE 100%);
-      z-index: 1;
+      margin-left: 230px; padding: 24px; min-height: 100vh; 
+      transition: margin-left 0.3s ease; position: relative;
+      background: linear-gradient(160deg, #1a3580 0%, #2455b8 40%, #3b82f6 75%, #79B5FE 100%); z-index: 1;
     }
-    .main-content::before {
-      content: '';
-      position: fixed;
-      top: -150px; right: -150px;
-      width: 500px; height: 500px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.06);
-      z-index: 0;
-      pointer-events: none;
-    }
-    .main-content::after {
-      content: '';
-      position: fixed;
-      bottom: -100px; left: 50%;
-      width: 80vw; height: 55vh;
-      border-radius: 50% 50% 0 0 / 40% 40% 0 0;
-      background: rgba(121,181,254,0.14);
-      z-index: 0;
-      pointer-events: none;
-      transform: translateX(-40%);
-    }
+    .main-content::before { content: ''; position: fixed; top: -150px; right: -150px; width: 500px; height: 500px; border-radius: 50%; background: rgba(255,255,255,0.06); z-index: 0; pointer-events: none; }
+    .main-content::after { content: ''; position: fixed; bottom: -100px; left: 50%; width: 80vw; height: 55vh; border-radius: 50% 50% 0 0 / 40% 40% 0 0; background: rgba(121,181,254,0.14); z-index: 0; pointer-events: none; transform: translateX(-40%); }
     .main-content > * { position: relative; z-index: 1; }
 
-    body.sidebar-collapsed .main-content {
-      margin-left: 0;
-    }
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; position: relative; z-index: 9998; }
     .header-left { display: flex; align-items: center; gap: 14px; }
     .header h1 { font-size: 24px; color: #ffffff; text-shadow: 0 1px 4px rgba(0,0,0,0.2); }
 
     .menu-toggle-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       background: rgba(255,255,255,0.15); border: none;
-      color: #ffffff; cursor: pointer;
-      padding: 7px;
-      border-radius: 8px;
-      transition: background 0.2s, transform 0.3s ease;
+      color: #ffffff; cursor: pointer; padding: 7px; border-radius: 8px;
+      transition: background 0.2s;
     }
     .menu-toggle-btn:hover { background: rgba(255,255,255,0.25); }
+    .menu-toggle-btn svg { transition: transform 0.3s ease; }
+    body.sidebar-collapsed .menu-toggle-btn svg { transform: scaleX(-1); }
 
-    .admin-info { 
-      display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end;
-      position: relative;
-      z-index: 9999;
-    }
-    .admin-profile-trigger {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      padding: 6px 8px;
-      border-radius: 8px;
-      transition: background 0.2s;
-    }
-    .admin-profile-trigger:hover {
-      background: rgba(255,255,255,0.12);
-    }
-    #adminName {
-      font-size: 15px;
-      font-weight: 600;
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-    }
-    .admin-avatar {
-      width: 38px; height: 38px; 
-      background: #1a73e8; 
-      border-radius: 50%; 
-      display: flex; align-items: center; 
-      justify-content: center; 
-      color: white; font-weight: 600;
-      overflow: hidden;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .admin-profile-trigger:hover .admin-avatar { 
-      transform: scale(1.05); 
-    }
+    .admin-info { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; position: relative; z-index: 9999; }
+    .admin-profile-trigger { display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 6px 8px; border-radius: 8px; transition: background 0.2s; }
+    .admin-profile-trigger:hover { background: rgba(255,255,255,0.12); }
+    #adminName { font-size: 15px; font-weight: 600; color: #ffffff; display: flex; align-items: center; }
+    .admin-avatar { width: 38px; height: 38px; background: #1a73e8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; overflow: hidden; transition: transform 0.2s; }
+    .admin-profile-trigger:hover .admin-avatar { transform: scale(1.05); }
     .admin-avatar.controller-avatar { background: #1a73e8; }
-    
-    .admin-avatar svg {
-      width: 22px;
-      height: 22px;
-      fill: white;
-    }
+    .admin-avatar svg { width: 22px; height: 22px; fill: white; }
 
     .profile-dropdown {
-      position: absolute;
-      top: 55px;
-      right: 0;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.25);
-      min-width: 240px;
-      z-index: 9999;
-      display: none;
-      overflow: hidden;
-      border: 1px solid var(--gray-200);
+      position: absolute; top: 55px; right: 0; background: white; border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.25); min-width: 240px; z-index: 9999;
+      display: none; overflow: hidden; border: 1px solid var(--gray-200);
     }
     .profile-dropdown.show { display: block; animation: dropdownFade 0.2s ease; }
-    @keyframes dropdownFade {
-      from { opacity: 0; transform: translateY(-8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .profile-dropdown-header {
-      padding: 14px 16px;
-      background: var(--primary-xlight);
-      border-bottom: 1px solid var(--gray-200);
-    }
+    @keyframes dropdownFade { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    .profile-dropdown-header { padding: 14px 16px; background: var(--primary-xlight); border-bottom: 1px solid var(--gray-200); }
     .profile-dropdown-header .name { font-weight: 600; color: var(--gray-900); font-size: 14px; }
     .profile-dropdown-header .email { font-size: 12px; color: var(--gray-500); margin-top: 2px; word-break: break-all; }
-    .profile-dropdown-item {
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--gray-700);
-      cursor: pointer;
-      font-size: 14px;
-      transition: background 0.2s;
-      border: none;
-      background: none;
-      width: 100%;
-      text-align: left;
-      font-family: inherit;
-    }
+    .profile-dropdown-item { padding: 12px 16px; display: flex; align-items: center; gap: 10px; color: var(--gray-700); cursor: pointer; font-size: 14px; transition: background 0.2s; border: none; background: none; width: 100%; text-align: left; font-family: inherit; }
     .profile-dropdown-item:hover { background: var(--gray-100); }
     .profile-dropdown-item i { color: var(--primary); width: 18px; }
     .profile-dropdown-item.logout-item i { color: var(--danger); }
     .profile-dropdown-item.logout-item:hover { background: #FEE2E2; color: var(--danger); }
 
-    .access-denied {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 80px 20px;
-      text-align: center;
-      color: var(--gray-500);
-    }
+    .access-denied { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; text-align: center; color: var(--gray-500); }
     .access-denied i { font-size: 64px; margin-bottom: 20px; color: var(--gray-300); }
     .access-denied h2 { font-size: 22px; color: var(--gray-700); margin-bottom: 8px; }
-    .access-denied p { font-size: 14px; }
 
     /* ── STATS (NEW LAYOUT) ── */
-    .stats-row-1 {
-      display: grid; 
-      grid-template-columns: repeat(4, 1fr); 
-      gap: 16px; 
-      margin-bottom: 16px; 
-    }
-    .stats-row-2 {
-      display: grid; 
-      grid-template-columns: repeat(3, 1fr); 
-      gap: 16px; 
-      margin-bottom: 24px; 
-    }
+    .stats-row-1 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
+    .stats-row-2 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
 
-    .stat-card { 
-      background: rgba(255,255,255,0.92); 
-      padding: 16px; 
-      border-radius: 12px; 
-      box-shadow: 0 4px 20px rgba(15,37,87,0.12), 0 1px 0 rgba(255,255,255,0.5) inset; 
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.6);
-    }
-    .stat-card .stat-icon {
-      width: 36px; height: 36px; border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px; margin-bottom: 12px;
-    }
+    .stat-card { background: rgba(255,255,255,0.92); padding: 16px; border-radius: 12px; box-shadow: 0 4px 20px rgba(15,37,87,0.12), 0 1px 0 rgba(255,255,255,0.5) inset; backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.6); }
+    .stat-card .stat-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; margin-bottom: 12px; }
     .stat-icon.blue   { background: #DBEAFE; color: var(--primary); }
     .stat-icon.green  { background: #D1FAE5; color: var(--success); }
     .stat-icon.yellow { background: #FEF3C7; color: var(--warning); }
@@ -540,52 +388,28 @@
 
     .stat-card .stat-value { font-size: 24px; font-weight: 700; color: var(--gray-900); }
     .stat-card .stat-label { color: var(--gray-500); font-size: 12px; margin-top: 2px; }
-    .stat-names {
-      font-size: 11px;
-      color: var(--gray-500);
-      margin-top: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-weight: 500;
-      height: 14px;
-    }
+    .stat-names { font-size: 11px; color: var(--gray-500); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; height: 14px; }
 
     /* ── CARD ── */
-    .card { 
-      background: rgba(255,255,255,0.92); 
-      border-radius: 16px; 
-      box-shadow: 0 8px 32px rgba(15,37,87,0.18), 0 1px 0 rgba(255,255,255,0.5) inset; 
-      overflow: hidden;
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.6);
-    }
-    .card-header {
-      padding: 20px 24px; border-bottom: 1px solid var(--gray-200);
-      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
-    }
+    .card { background: rgba(255,255,255,0.92); border-radius: 16px; box-shadow: 0 8px 32px rgba(15,37,87,0.18), 0 1px 0 rgba(255,255,255,0.5) inset; overflow: hidden; backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.6); }
+    .card-header { padding: 20px 24px; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
     .card-header h3 { font-size: 16px; color: var(--gray-900); }
     .card-body { padding: 24px; }
 
     .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
     table { width: 100%; border-collapse: collapse; min-width: 600px; }
-    
-    th, td { padding: 8px 6px; text-align: center; border-bottom: 1px solid var(--gray-200); white-space: nowrap; }
+    th, td { padding: 12px 10px; text-align: center; border-bottom: 1px solid var(--gray-200); white-space: nowrap; font-size: 13px; }
     th { background: var(--gray-50); font-weight: 600; color: var(--gray-700); font-size: 11px; text-transform: uppercase; }
-    td { color: var(--gray-700); font-size: 12px; }
+    td { color: var(--gray-700); }
 
-    .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+    .badge { padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
     .badge-success { background: #D1FAE5; color: #059669; }
     .badge-warning { background: #FEF3C7; color: #D97706; }
     .badge-danger  { background: #FEE2E2; color: #DC2626; }
     .badge-info    { background: #DBEAFE; color: #2563EB; }
 
     /* ── MODALS ── */
-    .modal-overlay {
-      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5); z-index: 1000;
-      align-items: center; justify-content: center; padding: 16px;
-    }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 16px; }
     .modal-overlay.active { display: flex; }
     .modal { background: white; border-radius: 16px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
     .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; }
@@ -593,13 +417,7 @@
     .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--gray-500); }
     .modal-body { padding: 24px; }
     .modal-footer { padding: 16px 24px; border-top: 1px solid var(--gray-200); display: flex; justify-content: flex-end; gap: 12px; }
-
-    .photo-modal-img {
-      width: 100%;
-      border-radius: 8px;
-      margin-top: 10px;
-      background-color: #f3f4f6;
-    }
+    .photo-modal-img { width: 100%; border-radius: 8px; margin-top: 10px; background-color: #f3f4f6; }
 
     /* ── FACE ── */
     .face-capture-container { text-align: center; }
@@ -620,66 +438,38 @@
     .spinner { width: 40px; height: 40px; border: 3px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .toast {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.85);
-      padding: 16px 28px;
-      background: var(--gray-900);
-      color: white;
-      border-radius: 12px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
-      z-index: 9999;
-      display: none;
-      font-size: 15px;
-      font-weight: 500;
-      text-align: center;
-      min-width: 220px;
-      max-width: 340px;
-      pointer-events: none;
-    }
+    .toast { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.85); padding: 16px 28px; background: var(--gray-900); color: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.35); z-index: 9999; display: none; font-size: 15px; font-weight: 500; text-align: center; min-width: 220px; max-width: 340px; pointer-events: none; }
     .toast.success { background: var(--success); }
     .toast.error   { background: var(--danger); }
     .toast.show    { display: block; animation: toastPop 0.3s ease forwards; }
-    @keyframes toastPop {
-      from { transform: translate(-50%, -50%) scale(0.82); opacity: 0; }
-      to   { transform: translate(-50%, -50%) scale(1);    opacity: 1; }
-    }
+    @keyframes toastPop { from { transform: translate(-50%, -50%) scale(0.82); opacity: 0; } to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
 
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .form-grid .form-group.full-width { grid-column: span 2; }
 
     .action-btns { display: flex; gap: 8px; justify-content: center; }
-    .action-btn { padding: 4px 8px; border: none; border-radius: 6px; cursor: pointer; font-size: 11px; }
+    .action-btn { padding: 6px 10px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s; }
     .action-btn.edit   { background: #DBEAFE; color: var(--primary); }
+    .action-btn.edit:hover { background: var(--primary); color: white; }
     .action-btn.delete { background: #FEE2E2; color: var(--danger); }
-    .action-btn.face   { background: #D1FAE5; color: var(--success); }
+    .action-btn.delete:hover { background: var(--danger); color: white; }
+    .action-btn.face   { background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; }
+    .action-btn.face:hover { background: #D1FAE5; color: #047857; }
 
     .page { display: none; }
     .page.active { display: block; }
-
     .empty-state { text-align: center; padding: 60px 20px; color: var(--gray-500); }
     .empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
-
-    .password-hint {
-      font-size: 12px;
-      color: var(--gray-500);
-      margin-top: 4px;
-    }
+    .password-hint { font-size: 12px; color: var(--gray-500); margin-top: 4px; }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
-      body.sidebar-collapsed .sidebar { transform: translateX(0); }
-      body.sidebar-collapsed .main-content { margin-left: 0; }
-      
-      .sidebar { transform: translateX(-100%); }
+      .sidebar { transform: translateX(-100%); width: 230px !important; }
       .sidebar.show { transform: translateX(0); }
       .sidebar-overlay.show { display: block; }
-      .main-content { margin-left: 0; padding: 16px; }
+      .main-content { margin-left: 0 !important; padding: 16px; }
       
       .stats-row-1, .stats-row-2 { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-      
       .header h1 { font-size: 18px; }
       .header { margin-bottom: 16px; }
       .card-body { padding: 14px; }
@@ -693,17 +483,10 @@
 
     @media (max-width: 480px) {
       .login-container { padding: 20px 16px; align-items: flex-start; padding-top: 110px; }
-      .login-box {
-        padding: 90px 22px 26px;
-        max-width: 100%;
-        border-radius: 20px;
-        margin-top: 70px;
-      }
+      .login-box { padding: 90px 22px 26px; max-width: 100%; border-radius: 20px; margin-top: 70px; }
       .logo { width: 240px; height: 190px; }
       .logo-container { top: -72px; }
-      
       .stats-row-1, .stats-row-2 { grid-template-columns: 1fr 1fr; gap: 10px; }
-      
       .stat-card { padding: 12px; }
       .stat-card .stat-value { font-size: 18px; }
       .stat-card .stat-icon { width: 32px; height: 32px; font-size: 14px; margin-bottom: 8px; }
@@ -777,44 +560,44 @@
       </div>
       <ul class="nav-menu">
         <li class="nav-item">
-          <a class="nav-link active" data-page="dashboard">
+          <a class="nav-link active" data-page="dashboard" title="Dashboard">
             <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
           </a>
         </li>
         <li class="nav-item" id="navEmployees">
-          <a class="nav-link" data-page="employees">
+          <a class="nav-link" data-page="employees" title="Employees">
             <i class="fas fa-users"></i><span>Employees</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" data-page="attendance">
+          <a class="nav-link" data-page="attendance" title="Attendance">
             <i class="fas fa-clock"></i><span>Attendance</span>
           </a>
         </li>
         <li class="nav-item" id="navOvertime">
-          <a class="nav-link" data-page="overtime">
+          <a class="nav-link" data-page="overtime" title="Overtime">
             <i class="fas fa-business-time"></i><span>Overtime</span>
           </a>
         </li>
         <li class="nav-item" id="navLeave">
-          <a class="nav-link" data-page="leave">
+          <a class="nav-link" data-page="leave" title="Leave">
             <i class="fas fa-calendar-minus"></i><span>Leave</span>
           </a>
         </li>
         <li class="nav-item" id="navHolidays">
-          <a class="nav-link" data-page="holidays">
+          <a class="nav-link" data-page="holidays" title="Holidays">
             <i class="fas fa-umbrella-beach"></i><span>Holidays</span>
           </a>
         </li>
         <li class="nav-item" id="navReports">
-          <a class="nav-link" data-page="reports">
+          <a class="nav-link" data-page="reports" title="Reports">
             <i class="fas fa-chart-bar"></i><span>Reports</span>
           </a>
         </li>
       </ul>
-      <div style="position:absolute;bottom:20px;left:16px;right:16px;">
-        <button class="btn btn-secondary" style="width:100%;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.85);border:1px solid rgba(255,255,255,0.2);" onclick="logout()">
-          <i class="fas fa-sign-out-alt"></i> Logout
+      <div class="sidebar-bottom" style="position:absolute;bottom:20px;left:16px;right:16px;">
+        <button class="btn btn-secondary" style="width:100%;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.85);border:1px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;" onclick="logout()" title="Logout">
+          <i class="fas fa-sign-out-alt" style="margin-right:8px;"></i><span class="logout-text">Logout</span>
         </button>
       </div>
     </nav>
@@ -1462,7 +1245,7 @@
       const isController = currentUser.role === 'controller';
 
       const adminNameEl = document.getElementById('adminName');
-      adminNameEl.innerHTML = currentUser.name + ' <i class="fas fa-caret-down" style="font-size: 14px; margin-left: 5px; color: var(--gray-500);"></i>';
+      adminNameEl.innerHTML = currentUser.name + ' <i class="fas fa-caret-down" style="font-size: 14px; margin-left: 5px; color: rgba(255,255,255,0.7);"></i>';
       
       const sidebarRoleText = document.getElementById('sidebarRoleText');
       if (sidebarRoleText) {
@@ -1475,17 +1258,14 @@
         if (currentUser.photo) {
           avatarEl.innerHTML = `<img src="${currentUser.photo}" alt="Profile" style="width:100%;height:100%;object-fit:cover;">`;
           avatarEl.style.background = 'transparent';
-          avatarEl.style.boxShadow = 'none';
         } else {
           avatarEl.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
           avatarEl.style.background = '#1a73e8';
-          avatarEl.style.boxShadow = 'none';
         }
         avatarEl.className = 'admin-avatar controller-avatar';
       } else {
         avatarEl.innerHTML = `<img src="punchbook_logo.png" alt="Admin Logo" style="width: 120%; height: auto; margin-top: 4px; margin-left: -2px; object-fit: contain;">`;
         avatarEl.style.background = '#ffffff';
-        avatarEl.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
         avatarEl.className = 'admin-avatar';
       }
       
@@ -1732,7 +1512,6 @@
       tbody.innerHTML = employees.map(emp => {
         const mailCount = emp.mailCount || 0;
         
-        // LIMIT CHECK: Agar count 5 ya usse jyada hai to button disabled aur text dono RED honge
         const isLimitFull = mailCount >= 5;
         const sendBtnHtml = isLimitFull 
           ? `<button class="btn-send-mail" style="background: #FEE2E2; color: var(--danger); border-color: #FCA5A5; cursor: not-allowed; transform: none; box-shadow: none;" disabled title="Limit of 5 mails reached"><i class="fas fa-ban"></i> Limit Full</button>`
@@ -1751,10 +1530,8 @@
           <td>${emp.weekOff || 'Sunday'}</td>
           <td><span class="badge badge-${emp.status === 'Active' ? 'success' : 'danger'}">${emp.status}</span></td>
           
-          <!-- Send Mail Button -->
           <td>${sendBtnHtml}</td>
 
-          <!-- Mail Count (X/5 Tracker) -->
           <td style="font-weight: 700; color: ${countColor};">${mailCount}/5</td>
 
           <td><span class="badge badge-info" id="face-${emp.empId}">Checking...</span></td>
@@ -2179,17 +1956,15 @@
       const target = parseInt(targetSpan.textContent) || 0;
       const statusAction = document.getElementById('leaveActionStatus').value;
       
-      // Update logic: Only red if sum is GREATER than requested days
       if (statusAction === 'Approved' && sum > target) {
-        displaySpan.style.color = "var(--danger)"; // Exceeds target
+        displaySpan.style.color = "var(--danger)";
       } else if (statusAction === 'Approved' && sum < target) {
-        displaySpan.style.color = "var(--warning)"; // Less than target (Valid but shown as warning color)
+        displaySpan.style.color = "var(--warning)";
       } else {
-        displaySpan.style.color = "var(--primary)"; // Exactly target or not approved yet
+        displaySpan.style.color = "var(--primary)";
       }
     }
 
-    // Run calculate when user changes status dropdown to trigger error colors instantly
     document.getElementById('leaveActionStatus').addEventListener('change', calculateLeaves);
 
     async function saveLeaveApproval() {
@@ -2198,10 +1973,9 @@
       const sl = parseInt(document.getElementById('leaveSL').value) || 0;
       const el = parseInt(document.getElementById('leaveEL').value) || 0;
       const other = parseInt(document.getElementById('leaveOther').value) || 0;
-      const leaveStatus = document.getElementById('leaveActionStatus').value; // Applied, Approved, Rejected
+      const leaveStatus = document.getElementById('leaveActionStatus').value;
       const totalDaysTarget = parseInt(document.getElementById('leaveTotalDays').value) || 0;
       
-      // Validation Check: Cannot approve MORE days than requested
       if (leaveStatus === 'Approved') {
         const sum = cl + sl + el + other;
         if (sum > totalDaysTarget) {
@@ -2210,7 +1984,6 @@
         }
       }
 
-      // Approved string mapping
       const approvedVal = (leaveStatus === 'Approved') ? 'Yes' : 'No';
 
       showToast('Saving leave...', '');
@@ -2230,7 +2003,6 @@
         showToast('✅ Leave successfully updated', 'success');
         closeLeaveModal();
         loadLeaves();
-        // Since we changed approval status, we should refresh dashboard count if we go back
       } else {
         showToast(result.message || 'Error saving leave', 'error');
       }
@@ -2254,7 +2026,6 @@
       return new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
     }
 
-    // ── SEND CREDENTIALS (MODIFIED UX) ──
     let empIdForMail = null;
 
     function confirmSendMail(empId) {
@@ -2275,26 +2046,21 @@
       const cancelBtn = document.getElementById('cancelMailBtn');
       const originalText = btn.innerHTML;
       
-      // 1. Button ko "Sending..." mode me dalo aur click lock karo
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
       btn.disabled = true;
       cancelBtn.disabled = true;
 
-      // 2. API Call karein
       const result = await apiCall({ action: 'sendCredentials', empId: empId });
       
-      // 3. Wapas normal state me lao
       btn.innerHTML = originalText;
       btn.disabled = false;
       cancelBtn.disabled = false;
       closeMailConfirmModal(); 
       
-      // 4. Custom Messages & Background Refresh
       if (result.success) {
         showToast('✅ Credentials sent successfully!', 'success');
-        loadEmployees(); // Turant count badha do
+        loadEmployees(); 
       } else {
-        // API error chupaya gaya hai, simple generic message de rahe hain
         showToast('❌ Something went wrong! Please try again later.', 'error');
       }
     });
