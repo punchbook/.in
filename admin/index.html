@@ -431,8 +431,31 @@
     .captured-photo { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 4px solid var(--primary); margin: 20px auto; display: block; }
 
     /* ── FILTERS ── */
-    .filters { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-    .filters input, .filters select { padding: 10px 16px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 14px; flex: 1; min-width: 150px; }
+    .filters { 
+      display: flex; 
+      gap: 12px; 
+      margin-bottom: 20px; 
+      flex-wrap: wrap; 
+      align-items: center; 
+    }
+    .filters input, .filters select { 
+      padding: 10px 14px; 
+      border: 1px solid var(--gray-300); 
+      border-radius: 8px; 
+      font-size: 14px; 
+      flex: 1 1 min-content; 
+      min-width: 140px; 
+    }
+    .filters .btn {
+      width: auto !important; 
+      flex: 0 0 auto;
+      padding: 10px 20px;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 768px) {
+      .filters .btn { flex: 1 1 auto; text-align: center; }
+    }
 
     .loading { display: flex; align-items: center; justify-content: center; padding: 40px; }
     .spinner { width: 40px; height: 40px; border: 3px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
@@ -455,6 +478,8 @@
     .action-btn.delete:hover { background: var(--danger); color: white; }
     .action-btn.face   { background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; }
     .action-btn.face:hover { background: #D1FAE5; color: #047857; }
+    .action-btn.reset   { background: #FEF3C7; color: var(--warning); border: 1px solid #FDE68A; }
+    .action-btn.reset:hover { background: var(--warning); color: white; }
 
     .page { display: none; }
     .page.active { display: block; }
@@ -507,6 +532,9 @@
   </style>
 </head>
 <body>
+
+  <!-- GLOBAL DATALIST FOR EMPLOYEE SEARCH -->
+  <datalist id="employeeDatalist"></datalist>
 
   <!-- ════════════════════ LOGIN PAGE ════════════════════ -->
   <div class="login-container" id="loginPage">
@@ -647,11 +675,41 @@
       <!-- ── Dashboard ── -->
       <div class="page active" id="dashboardPage">
         
+        <div class="filters" style="background: rgba(255,255,255,0.92); padding: 12px 16px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+          <select id="dashDateRange" onchange="handleDateFilterChange('dash')">
+            <option value="all">All Time</option>
+            <option value="today">Today</option>
+            <option value="yesterday">Yesterday</option>
+            <option value="thisWeek">This Week</option>
+            <option value="lastWeek">Last Week</option>
+            <option value="thisMonth">This Month</option>
+            <option value="lastMonth">Last Month</option>
+            <option value="custom">Custom Date</option>
+          </select>
+          <input type="date" id="dashFromDate" style="display:none;">
+          <input type="date" id="dashToDate" style="display:none;">
+          <input type="text" id="dashEmpSearch" list="employeeDatalist" placeholder="Search Employee by Name/ID...">
+          <button class="btn btn-primary" onclick="loadDashboard()"><i class="fas fa-search"></i> Apply</button>
+          <button class="btn btn-secondary" onclick="resetFilters('dash')"><i class="fas fa-undo"></i> Reset</button>
+        </div>
+
         <div class="stats-row-1">
           <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-users"></i></div><div class="stat-value" id="statTotalEmp">0</div><div class="stat-label">Total Employees</div></div>
-          <div class="stat-card"><div class="stat-icon green"><i class="fas fa-user-check"></i></div><div class="stat-value" id="statPresent">0</div><div class="stat-label">Present Today</div></div>
-          <div class="stat-card"><div class="stat-icon red"><i class="fas fa-user-times"></i></div><div class="stat-value" id="statAbsent">0</div><div class="stat-label">Absent Today</div></div>
-          <div class="stat-card"><div class="stat-icon yellow"><i class="fas fa-clock"></i></div><div class="stat-value" id="statLate">0</div><div class="stat-label">Late Today</div></div>
+          <div class="stat-card"><div class="stat-icon green"><i class="fas fa-user-check"></i></div><div class="stat-value" id="statPresent">0</div><div class="stat-label">Present</div></div>
+          
+          <div class="stat-card">
+            <div class="stat-icon red"><i class="fas fa-user-times"></i></div>
+            <div class="stat-value" id="statAbsent">0</div>
+            <div class="stat-label">Absent</div>
+            <div class="stat-names" id="statAbsentNames" title="">-</div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon yellow"><i class="fas fa-clock"></i></div>
+            <div class="stat-value" id="statLate">0</div>
+            <div class="stat-label">Late</div>
+            <div class="stat-names" id="statLateNames" title="">-</div>
+          </div>
         </div>
         
         <div class="stats-row-2">
@@ -664,18 +722,18 @@
           <div class="stat-card">
             <div class="stat-icon orange"><i class="fas fa-calendar-minus"></i></div>
             <div class="stat-value" id="statLeave">0</div>
-            <div class="stat-label">On Leave</div>
+            <div class="stat-label">On Leave (Top 5)</div>
             <div class="stat-names" id="statLeaveNames" title="">-</div>
           </div>
           <div class="stat-card">
             <div class="stat-icon teal"><i class="fas fa-umbrella-beach"></i></div>
             <div class="stat-value" id="statHoliday" style="font-size: 16px; line-height: 1.2; word-break: break-word; white-space: normal;">None</div>
-            <div class="stat-label" style="margin-top: 8px;">Today's Holiday</div>
+            <div class="stat-label" style="margin-top: 8px;">Holiday</div>
           </div>
         </div>
 
         <div class="card">
-          <div class="card-header"><h3>Today's Attendance</h3></div>
+          <div class="card-header"><h3>Attendance Records (Filtered)</h3></div>
           <div class="card-body">
             <div class="table-responsive">
               <table>
@@ -712,9 +770,12 @@
           <div class="card">
             <div class="card-header">
               <h3>All Employees</h3>
-              <button class="btn" style="background-color: var(--primary); color: white; width: max-content !important; padding: 10px 24px; flex-shrink: 0;" onclick="openAddEmployeeModal()">
-                <i class="fas fa-plus"></i> Add Employee
-              </button>
+              <div style="display:flex; gap:10px;">
+                <input type="text" id="empSearchInput" placeholder="Search by Name/ID..." style="padding:8px; border-radius:6px; border:1px solid #ccc; font-size:13px;" onkeyup="filterEmployeesList()">
+                <button class="btn" style="background-color: var(--primary); color: white; width: max-content !important; padding: 10px 24px; flex-shrink: 0;" onclick="openAddEmployeeModal()">
+                  <i class="fas fa-plus"></i> Add Employee
+                </button>
+              </div>
             </div>
             <div class="card-body">
               <div class="table-responsive">
@@ -730,13 +791,14 @@
                       <th>Week Off</th>
                       <th>Status</th>
                       <th>Send Mail</th>
+                      <th class="admin-reset-col">Reset Count</th>
                       <th>Mail Count</th>
                       <th>Face</th>
                       <th>View Photo</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
-                  <tbody id="employeesTable"><tr><td colspan="13" class="loading"><div class="spinner"></div></td></tr></tbody>
+                  <tbody id="employeesTable"><tr><td colspan="14" class="loading"><div class="spinner"></div></td></tr></tbody>
                 </table>
               </div>
             </div>
@@ -750,9 +812,27 @@
           <div class="card-header"><h3>Attendance Records</h3></div>
           <div class="card-body">
             <div class="filters">
-              <input type="date" id="filterDate" onchange="filterAttendance()">
-              <select id="filterEmployee" onchange="filterAttendance()"><option value="">All Employees</option></select>
-              <button class="btn btn-secondary btn-sm" style="flex: 0 1 auto;" onclick="clearFilters()">Clear</button>
+              <select id="attDateRange" onchange="handleDateFilterChange('att')">
+                <option value="all">All Time</option>
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="thisWeek">This Week</option>
+                <option value="lastWeek">Last Week</option>
+                <option value="thisMonth">This Month</option>
+                <option value="lastMonth">Last Month</option>
+                <option value="custom">Custom Date</option>
+              </select>
+              <input type="date" id="attFromDate" style="display:none;">
+              <input type="date" id="attToDate" style="display:none;">
+              <input type="text" id="attEmpSearch" list="employeeDatalist" placeholder="Search Employee...">
+              <select id="attStatus">
+                <option value="All">All Status</option>
+                <option value="Present">Present/Early</option>
+                <option value="Late">Late</option>
+                <option value="Overtime">Overtime</option>
+              </select>
+              <button class="btn btn-primary" onclick="loadAttendance()"><i class="fas fa-search"></i> Apply</button>
+              <button class="btn btn-secondary" onclick="resetFilters('att')"><i class="fas fa-undo"></i> Reset</button>
             </div>
             <div class="table-responsive">
               <table>
@@ -783,7 +863,41 @@
         <div class="card">
           <div class="card-header"><h3>Overtime Management</h3></div>
           <div class="card-body">
-            <div class="empty-state"><i class="fas fa-business-time"></i><p>Overtime features coming soon...</p></div>
+            <div class="filters">
+              <select id="otDateRange" onchange="handleDateFilterChange('ot')">
+                <option value="all">All Time</option>
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="thisWeek">This Week</option>
+                <option value="lastWeek">Last Week</option>
+                <option value="thisMonth">This Month</option>
+                <option value="lastMonth">Last Month</option>
+                <option value="custom">Custom Date</option>
+              </select>
+              <input type="date" id="otFromDate" style="display:none;">
+              <input type="date" id="otToDate" style="display:none;">
+              <input type="text" id="otEmpSearch" list="employeeDatalist" placeholder="Search Employee...">
+              <button class="btn btn-primary" onclick="loadOvertime()"><i class="fas fa-search"></i> Apply</button>
+              <button class="btn btn-secondary" onclick="resetFilters('ot')"><i class="fas fa-undo"></i> Reset</button>
+            </div>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>OT ID</th>
+                    <th>Emp ID</th>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>OT In</th>
+                    <th>View</th>
+                    <th>OT Out</th>
+                    <th>View</th>
+                    <th>Total Hours</th>
+                  </tr>
+                </thead>
+                <tbody id="overtimeTable"><tr><td colspan="9" class="loading"><div class="spinner"></div></td></tr></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -795,6 +909,23 @@
             <h3>Leave Management</h3>
           </div>
           <div class="card-body">
+            <div class="filters">
+              <select id="lvDateRange" onchange="handleDateFilterChange('lv')">
+                <option value="all">All Time</option>
+                <option value="thisMonth">This Month</option>
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="thisWeek">This Week</option>
+                <option value="lastWeek">Last Week</option>
+                <option value="lastMonth">Last Month</option>
+                <option value="custom">Custom Date</option>
+              </select>
+              <input type="date" id="lvFromDate" style="display:none;">
+              <input type="date" id="lvToDate" style="display:none;">
+              <input type="text" id="lvEmpSearch" list="employeeDatalist" placeholder="Search Employee...">
+              <button class="btn btn-primary" onclick="loadLeaves()"><i class="fas fa-search"></i> Apply</button>
+              <button class="btn btn-secondary" onclick="resetFilters('lv')"><i class="fas fa-undo"></i> Reset</button>
+            </div>
             <div class="table-responsive">
               <table>
                 <thead>
@@ -1105,7 +1236,101 @@
     
     let currentRecentRecords = [];
     let currentAllRecords = [];
+    let currentOTRecords = [];
     let currentLeaveRecords = [];
+
+    // Helper functions for Date Ranges
+    function getRangeDates(rangeType) {
+      const today = new Date();
+      let fromDate = new Date();
+      let toDate = new Date();
+      
+      switch(rangeType) {
+        case 'all':
+          // Extreme dates to encapsulate "All Time" dynamically without breaking backend structure
+          fromDate = new Date(2000, 0, 1);
+          toDate = new Date(2099, 11, 31);
+          break;
+        case 'today':
+          break;
+        case 'yesterday':
+          fromDate.setDate(today.getDate() - 1);
+          toDate.setDate(today.getDate() - 1);
+          break;
+        case 'thisWeek':
+          const day = today.getDay();
+          const diff = today.getDate() - day + (day == 0 ? -6:1); // Adjust when day is Sunday
+          fromDate = new Date(today.setDate(diff));
+          toDate = new Date();
+          break;
+        case 'lastWeek':
+          const lDay = today.getDay();
+          const lDiff = today.getDate() - lDay + (lDay == 0 ? -6:1) - 7;
+          fromDate = new Date(today.setDate(lDiff));
+          toDate = new Date(fromDate);
+          toDate.setDate(toDate.getDate() + 6);
+          break;
+        case 'thisMonth':
+          fromDate = new Date(today.getFullYear(), today.getMonth(), 1);
+          toDate = new Date();
+          break;
+        case 'lastMonth':
+          fromDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+          toDate = new Date(today.getFullYear(), today.getMonth(), 0);
+          break;
+      }
+      return { from: formatDate(fromDate), to: formatDate(toDate) };
+    }
+
+    function handleDateFilterChange(prefix) {
+      const select = document.getElementById(prefix + 'DateRange');
+      const customFrom = document.getElementById(prefix + 'FromDate');
+      const customTo = document.getElementById(prefix + 'ToDate');
+      
+      if (select.value === 'custom') {
+        customFrom.style.display = 'inline-block';
+        customTo.style.display = 'inline-block';
+      } else {
+        customFrom.style.display = 'none';
+        customTo.style.display = 'none';
+        const dates = getRangeDates(select.value);
+        customFrom.value = dates.from;
+        customTo.value = dates.to;
+      }
+    }
+
+    // Generic function to reset filters for any given tab
+    function resetFilters(prefix) {
+      if (prefix === 'dash') {
+        document.getElementById('dashDateRange').value = 'today';
+        document.getElementById('dashEmpSearch').value = '';
+        handleDateFilterChange('dash');
+        loadDashboard();
+      } else if (prefix === 'att') {
+        document.getElementById('attDateRange').value = 'today';
+        document.getElementById('attEmpSearch').value = '';
+        document.getElementById('attStatus').value = 'All';
+        handleDateFilterChange('att');
+        loadAttendance();
+      } else if (prefix === 'ot') {
+        document.getElementById('otDateRange').value = 'today';
+        document.getElementById('otEmpSearch').value = '';
+        handleDateFilterChange('ot');
+        loadOvertime();
+      } else if (prefix === 'lv') {
+        document.getElementById('lvDateRange').value = 'thisMonth';
+        document.getElementById('lvEmpSearch').value = '';
+        handleDateFilterChange('lv');
+        loadLeaves();
+      }
+    }
+
+    function extractEmpIdFromSearch(val) {
+      if(!val) return '';
+      const match = val.match(/\((.*?)\)$/);
+      if(match && match[1]) return match[1];
+      return val;
+    }
 
     function selectRole(role) {
       selectedRole = role;
@@ -1200,11 +1425,34 @@
 
       await apiCall({ action: 'createDefaultAdmin' });
 
+      // Initialize all date ranges
+      ['dash', 'att', 'ot', 'lv'].forEach(prefix => {
+        if(document.getElementById(prefix + 'DateRange')){
+          let defaultVal = prefix === 'lv' ? 'thisMonth' : 'today';
+          document.getElementById(prefix + 'DateRange').value = defaultVal;
+          handleDateFilterChange(prefix);
+        }
+      });
+
       const today    = new Date();
       const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
       document.getElementById('reportFromDate').value = formatDate(firstDay);
       document.getElementById('reportToDate').value   = formatDate(today);
+      
+      // Load global employees list for datalists silently
+      fetchEmployeesForDatalist();
     });
+
+    async function fetchEmployeesForDatalist() {
+       const res = await apiCall({ action: 'getAllEmployees' });
+       if (res.success) {
+          const list = document.getElementById('employeeDatalist');
+          list.innerHTML = '';
+          res.employees.forEach(emp => {
+             list.innerHTML += `<option value="${emp.name} (${emp.empId})"></option>`;
+          });
+       }
+    }
 
     async function handleLogin(e) {
       e.preventDefault();
@@ -1354,9 +1602,11 @@
       if (isController) {
         empNav.querySelector('.nav-link').classList.add('locked');
         rptNav.querySelector('.nav-link').classList.add('locked');
+        document.querySelectorAll('.admin-reset-col').forEach(el => el.style.display = 'none');
       } else {
         empNav.querySelector('.nav-link').classList.remove('locked');
         rptNav.querySelector('.nav-link').classList.remove('locked');
+        document.querySelectorAll('.admin-reset-col').forEach(el => el.style.display = 'table-cell');
       }
 
       const empAccessDenied = document.getElementById('empAccessDenied');
@@ -1404,7 +1654,7 @@
         case 'dashboard':  loadDashboard();   break;
         case 'employees':  loadEmployees();   break;
         case 'attendance': loadAttendance();  break;
-        case 'overtime':   break;
+        case 'overtime':   loadOvertime();    break;
         case 'leave':      loadLeaves();      break;
         case 'holidays':   loadHolidays();    break;
         case 'reports':    loadDepartments(); break;
@@ -1412,12 +1662,25 @@
     }
 
     async function loadDashboard() {
-      const result = await apiCall({ action: 'getDashboardStats' });
+      const fromDate = document.getElementById('dashFromDate').value;
+      const toDate = document.getElementById('dashToDate').value;
+      const searchEmpRaw = document.getElementById('dashEmpSearch').value;
+      const empId = extractEmpIdFromSearch(searchEmpRaw);
+      
+      const filters = { fromDate, toDate, empId };
+
+      const result = await apiCall({ action: 'getDashboardStats', filters: JSON.stringify(filters) });
       if (result.success) {
         document.getElementById('statTotalEmp').textContent = result.stats.totalEmployees;
         document.getElementById('statPresent').textContent  = result.stats.presentToday;
+        
         document.getElementById('statAbsent').textContent   = result.stats.absentToday;
+        document.getElementById('statAbsentNames').textContent = result.stats.absentNames || '-';
+        document.getElementById('statAbsentNames').title = result.stats.absentNames || '';
+
         document.getElementById('statLate').textContent     = result.stats.lateToday;
+        document.getElementById('statLateNames').textContent = result.stats.lateNames || '-';
+        document.getElementById('statLateNames').title = result.stats.lateNames || '';
         
         document.getElementById('statOvertime').textContent = result.stats.overtimeToday;
         document.getElementById('statOvertimeNames').textContent = result.stats.overtimeNames || '-';
@@ -1429,8 +1692,12 @@
         
         document.getElementById('statHoliday').textContent = result.stats.holidayToday;
       }
-      const att = await apiCall({ action: 'getRecentAttendance', limit: 10 });
-      if (att.success) renderRecentAttendance(att.records);
+      
+      // Load recent attendance filtered
+      const attResult = await apiCall({ action: 'getAllAttendance', filters: JSON.stringify(filters) });
+      if (attResult.success) {
+         renderRecentAttendance(attResult.records.slice(0, 10)); // Just top 10 for dashboard
+      }
     }
 
     function viewPunchPhoto(index, type) {
@@ -1455,6 +1722,17 @@
       document.getElementById('photoModal').classList.add('active');
     }
 
+    function viewOTPhotoAll(index, type) {
+      const record = currentOTRecords[index];
+      const photoData = type === 'in' ? record.punchInPhoto : record.punchOutPhoto;
+      if (!photoData) {
+        showToast('No photo available', 'error');
+        return;
+      }
+      document.getElementById('punchPhotoView').src = photoData;
+      document.getElementById('photoModal').classList.add('active');
+    }
+
     function closePhotoModal() {
       document.getElementById('photoModal').classList.remove('active');
       document.getElementById('punchPhotoView').src = '';
@@ -1464,7 +1742,7 @@
       currentRecentRecords = records;
       const tbody = document.getElementById('recentAttendanceTable');
       if (!records.length) {
-        tbody.innerHTML = '<tr><td colspan="11"><div class="empty-state"><i class="fas fa-clock"></i><p>No attendance records found</p></div></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="11"><div class="empty-state"><i class="fas fa-clock"></i><p>No attendance records found for this range</p></div></td></tr>';
         return;
       }
       tbody.innerHTML = records.map((r, index) => {
@@ -1493,21 +1771,42 @@
       }).join('');
     }
 
+    // Client-side quick filter for Employees Table
+    function filterEmployeesList() {
+       const input = document.getElementById('empSearchInput').value.toLowerCase();
+       const table = document.getElementById('employeesTable');
+       const tr = table.getElementsByTagName('tr');
+       for (let i = 0; i < tr.length; i++) {
+         const idTd = tr[i].getElementsByTagName('td')[0];
+         const nameTd = tr[i].getElementsByTagName('td')[2];
+         if (idTd || nameTd) {
+           const idTxt = idTd.textContent || idTd.innerText;
+           const nameTxt = nameTd.textContent || nameTd.innerText;
+           if (idTxt.toLowerCase().indexOf(input) > -1 || nameTxt.toLowerCase().indexOf(input) > -1) {
+             tr[i].style.display = "";
+           } else {
+             tr[i].style.display = "none";
+           }
+         }
+       }
+    }
+
     async function loadEmployees() {
       if (currentUser.role === 'controller') return;
       const result = await apiCall({ action: 'getAllEmployees' });
       if (result.success) {
         renderEmployees(result.employees);
-        populateEmployeeFilter(result.employees);
       }
     }
 
     function renderEmployees(employees) {
       const tbody = document.getElementById('employeesTable');
       if (!employees.length) {
-        tbody.innerHTML = '<tr><td colspan="13"><div class="empty-state"><i class="fas fa-users"></i><p>No employees found!</p></div></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="14"><div class="empty-state"><i class="fas fa-users"></i><p>No employees found!</p></div></td></tr>';
         return;
       }
+      
+      const isAdmin = currentUser.role === 'admin';
       
       tbody.innerHTML = employees.map(emp => {
         const mailCount = emp.mailCount || 0;
@@ -1518,6 +1817,10 @@
           : `<button class="btn-send-mail" onclick="confirmSendMail('${emp.empId}')" title="Send Login Credentials"><i class="fas fa-paper-plane"></i> Send</button>`;
           
         const countColor = isLimitFull ? 'var(--danger)' : 'var(--primary)';
+        
+        const resetBtnHtml = isAdmin 
+          ? `<button class="action-btn reset" onclick="resetMail('${emp.empId}')" title="Reset Mail Count"><i class="fas fa-undo"></i></button>`
+          : '';
 
         return `
         <tr>
@@ -1531,7 +1834,7 @@
           <td><span class="badge badge-${emp.status === 'Active' ? 'success' : 'danger'}">${emp.status}</span></td>
           
           <td>${sendBtnHtml}</td>
-
+          <td class="admin-reset-col" ${!isAdmin ? 'style="display:none;"' : ''}>${resetBtnHtml}</td>
           <td style="font-weight: 700; color: ${countColor};">${mailCount}/5</td>
 
           <td><span class="badge badge-info" id="face-${emp.empId}">Checking...</span></td>
@@ -1564,12 +1867,16 @@
       });
     }
 
-    function populateEmployeeFilter(employees) {
-      const select = document.getElementById('filterEmployee');
-      select.innerHTML = '<option value="">All Employees</option>';
-      employees.forEach(emp => {
-        select.innerHTML += `<option value="${emp.empId}">${emp.name}</option>`;
-      });
+    async function resetMail(empId) {
+       if(!confirm('Reset mail count to 0 for this employee?')) return;
+       showToast('Resetting...', '');
+       const res = await apiCall({ action: 'resetMailCount', empId: empId });
+       if(res.success) {
+          showToast('✅ Count reset successfully!', 'success');
+          loadEmployees();
+       } else {
+          showToast(res.message, 'error');
+       }
     }
 
     function openAddEmployeeModal() {
@@ -1746,28 +2053,20 @@
     }
 
     async function loadAttendance() {
-      const result = await apiCall({ action: 'getAllAttendance' });
+      const fromDate = document.getElementById('attFromDate').value;
+      const toDate = document.getElementById('attToDate').value;
+      const searchEmpRaw = document.getElementById('attEmpSearch').value;
+      const empId = extractEmpIdFromSearch(searchEmpRaw);
+      const status = document.getElementById('attStatus').value;
+
+      const filters = { fromDate, toDate, empId, status };
+
+      document.getElementById('attendanceTable').innerHTML = '<tr><td colspan="11" class="loading"><div class="spinner"></div></td></tr>';
+      
+      const result = await apiCall({ action: 'getAllAttendance', filters: JSON.stringify(filters) });
       if (result.success) {
         renderAttendance(result.records);
-        const empResult = await apiCall({ action: 'getAllEmployees' });
-        if (empResult.success) populateEmployeeFilter(empResult.employees);
       }
-    }
-
-    async function filterAttendance() {
-      const date  = document.getElementById('filterDate').value;
-      const empId = document.getElementById('filterEmployee').value;
-      const filters = {};
-      if (date)  filters.date  = date;
-      if (empId) filters.empId = empId;
-      const result = await apiCall({ action: 'getAllAttendance', filters: JSON.stringify(Object.keys(filters).length ? filters : null) });
-      if (result.success) renderAttendance(result.records);
-    }
-
-    function clearFilters() {
-      document.getElementById('filterDate').value     = '';
-      document.getElementById('filterEmployee').value = '';
-      loadAttendance();
     }
 
     function renderAttendance(records) {
@@ -1799,6 +2098,48 @@
           <td style="color: var(--primary); font-weight: 600;">${r.otPunchIn || '-'}</td>
           <td style="color: var(--primary); font-weight: 600;">${r.otPunchOut || '-'}</td>
           <td><span class="badge badge-${r.status === 'Present' ? 'success' : r.status === 'Late' ? 'warning' : 'info'}">${r.status}</span></td>
+        </tr>`;
+      }).join('');
+    }
+
+    async function loadOvertime() {
+      const fromDate = document.getElementById('otFromDate').value;
+      const toDate = document.getElementById('otToDate').value;
+      const searchEmpRaw = document.getElementById('otEmpSearch').value;
+      const empId = extractEmpIdFromSearch(searchEmpRaw);
+
+      const filters = { fromDate, toDate, empId };
+
+      document.getElementById('overtimeTable').innerHTML = '<tr><td colspan="9" class="loading"><div class="spinner"></div></td></tr>';
+      
+      const result = await apiCall({ action: 'getAllOvertime', filters: JSON.stringify(filters) });
+      if (result.success) {
+        renderOvertime(result.records);
+      }
+    }
+
+    function renderOvertime(records) {
+      currentOTRecords = records;
+      const tbody = document.getElementById('overtimeTable');
+      if (!records.length) {
+        tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><i class="fas fa-business-time"></i><p>No overtime records found</p></div></td></tr>';
+        return;
+      }
+      tbody.innerHTML = records.map((r, index) => {
+        const pinBtn = r.punchInPhoto ? `<button class="action-btn face" onclick="viewOTPhotoAll(${index}, 'in')"><i class="fas fa-image"></i> View</button>` : '-';
+        const poutBtn = r.punchOutPhoto ? `<button class="action-btn face" onclick="viewOTPhotoAll(${index}, 'out')"><i class="fas fa-image"></i> View</button>` : '-';
+        
+        return `
+        <tr>
+          <td style="font-size:10px; font-weight:600; color:var(--gray-700); line-height:1.2;">${r.otId || '-'}</td>
+          <td>${r.empId}</td>
+          <td>${r.empName}</td>
+          <td>${formatDisplayDate(r.date)}</td>
+          <td style="color: var(--primary); font-weight: 600;">${r.otPunchIn || '-'}</td>
+          <td>${pinBtn}</td>
+          <td style="color: var(--primary); font-weight: 600;">${r.otPunchOut || '-'}</td>
+          <td>${poutBtn}</td>
+          <td><span class="badge badge-success">${r.workHours ? r.workHours + ' hrs' : '-'}</span></td>
         </tr>`;
       }).join('');
     }
@@ -1872,10 +2213,17 @@
 
     // ============ LEAVE MANAGEMENT ============
     async function loadLeaves() {
+      const fromDate = document.getElementById('lvFromDate').value;
+      const toDate = document.getElementById('lvToDate').value;
+      const searchEmpRaw = document.getElementById('lvEmpSearch').value;
+      const empId = extractEmpIdFromSearch(searchEmpRaw);
+
+      const filters = { fromDate, toDate, empId };
+
       const tbody = document.getElementById('leaveTable');
       tbody.innerHTML = '<tr><td colspan="12" class="loading"><div class="spinner"></div></td></tr>';
       
-      const result = await apiCall({ action: 'getAllLeaves' });
+      const result = await apiCall({ action: 'getAllLeaves', filters: JSON.stringify(filters) });
       if (result.success) {
         currentLeaveRecords = result.leaves;
         renderLeaves(result.leaves);
@@ -1887,7 +2235,7 @@
     function renderLeaves(leaves) {
       const tbody = document.getElementById('leaveTable');
       if (!leaves || !leaves.length) {
-        tbody.innerHTML = '<tr><td colspan="12"><div class="empty-state"><i class="fas fa-calendar-minus"></i><p>No leave applications found!</p></div></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="12"><div class="empty-state"><i class="fas fa-calendar-minus"></i><p>No leave applications found for this range!</p></div></td></tr>';
         return;
       }
       
