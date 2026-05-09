@@ -1011,12 +1011,15 @@
                     <th>From Date</th>
                     <th>To Date</th>
                     <th>Total Days</th>
-                    <th>CL / SL / EL / Other</th>
+                    <th>CL</th>
+                    <th>SL</th>
+                    <th>EL</th>
+                    <th>Other</th>
                     <th>Status</th>
                     <th>Action</th>
                   </tr>
                 </thead>
-                <tbody id="leaveTable"><tr><td colspan="9" class="loading"><div class="spinner"></div></td></tr></tbody>
+                <tbody id="leaveTable"><tr><td colspan="12" class="loading"><div class="spinner"></div></td></tr></tbody>
               </table>
             </div>
           </div>
@@ -2082,21 +2085,21 @@
     // ============ LEAVE MANAGEMENT ============
     async function loadLeaves() {
       const tbody = document.getElementById('leaveTable');
-      tbody.innerHTML = '<tr><td colspan="9" class="loading"><div class="spinner"></div></td></tr>';
+      tbody.innerHTML = '<tr><td colspan="12" class="loading"><div class="spinner"></div></td></tr>';
       
       const result = await apiCall({ action: 'getAllLeaves' });
       if (result.success) {
         currentLeaveRecords = result.leaves;
         renderLeaves(result.leaves);
       } else {
-        tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><p>${result.message}</p></div></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="12"><div class="empty-state"><p>${result.message}</p></div></td></tr>`;
       }
     }
 
     function renderLeaves(leaves) {
       const tbody = document.getElementById('leaveTable');
       if (!leaves || !leaves.length) {
-        tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><i class="fas fa-calendar-minus"></i><p>No leave applications found!</p></div></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="12"><div class="empty-state"><i class="fas fa-calendar-minus"></i><p>No leave applications found!</p></div></td></tr>';
         return;
       }
       
@@ -2108,8 +2111,6 @@
         else if (lowerStatus === 'rejected') statusBadge = '<span class="badge badge-danger">Rejected</span>';
         else statusBadge = '<span class="badge badge-warning">Applied</span>';
 
-        const distribution = `${l.cl} / ${l.sl} / ${l.el} / ${l.otherLeave}`;
-
         return `
         <tr>
           <td style="color: var(--gray-500); font-size: 11px;">${formatDisplayDate(l.date)}</td>
@@ -2118,7 +2119,10 @@
           <td style="color: var(--primary);">${formatDisplayDate(l.fromDate)}</td>
           <td style="color: var(--primary);">${formatDisplayDate(l.toDate)}</td>
           <td style="font-weight:700;">${l.days}</td>
-          <td style="font-size: 11px;">${distribution}</td>
+          <td style="font-weight:600; color: var(--gray-700);">${l.cl}</td>
+          <td style="font-weight:600; color: var(--gray-700);">${l.sl}</td>
+          <td style="font-weight:600; color: var(--gray-700);">${l.el}</td>
+          <td style="font-weight:600; color: var(--gray-700);">${l.otherLeave}</td>
           <td>${statusBadge}</td>
           <td>
             <button class="action-btn edit" onclick="openLeaveModal(${index})"><i class="fas fa-edit"></i> Edit</button>
