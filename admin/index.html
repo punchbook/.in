@@ -175,10 +175,11 @@
       transition: all 0.2s; display: inline-flex;
       align-items: center; justify-content: center; gap: 8px;
     }
+    .btn:disabled { opacity: 0.7; cursor: not-allowed; }
     .btn-primary    { background: var(--primary); color: white; width: 100%; }
-    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-dark); }
     .btn-controller { background: var(--primary); color: white; width: 100%; }
-    .btn-controller:hover { background: var(--primary-dark); }
+    .btn-controller:hover:not(:disabled) { background: var(--primary-dark); }
     .btn-success { background: var(--success); color: white; }
     .btn-danger { background: var(--danger); color: white; }
     .btn-secondary { background: var(--gray-200); color: var(--gray-700); }
@@ -199,7 +200,7 @@
       align-items: center;
       gap: 6px;
     }
-    .btn-send-mail:hover {
+    .btn-send-mail:hover:not(:disabled) {
       background: var(--primary);
       color: white;
       border-color: var(--primary);
@@ -917,7 +918,6 @@
           <div class="card">
             <div class="card-header">
               <h3>All Employees</h3>
-              <!-- 🔴 FIXED ADD EMPLOYEE BUTTON -->
               <button class="btn" style="background-color: var(--primary); color: white; width: max-content !important; padding: 10px 24px; flex-shrink: 0;" onclick="openAddEmployeeModal()">
                 <i class="fas fa-plus"></i> Add Employee
               </button>
@@ -935,8 +935,8 @@
                       <th>Designation</th>
                       <th>Week Off</th>
                       <th>Status</th>
-                      <th>Send Mail</th> <!-- SWAPPED: Send Mail is first -->
-                      <th>Mail Count</th> <!-- SWAPPED: Mail Count is next -->
+                      <th>Send Mail</th>
+                      <th>Mail Count</th>
                       <th>Face</th>
                       <th>View Photo</th>
                       <th>Actions</th>
@@ -1190,7 +1190,7 @@
           Are you sure you want to email the login details to this employee?
         </p>
         <div style="display: flex; gap: 12px; justify-content: center;">
-          <button class="btn btn-secondary" style="flex: 1;" onclick="closeMailConfirmModal()">Cancel</button>
+          <button class="btn btn-secondary" style="flex: 1;" onclick="closeMailConfirmModal()" id="cancelMailBtn">Cancel</button>
           <button class="btn btn-primary" style="flex: 1;" id="confirmSendMailBtn">
             <i class="fas fa-paper-plane"></i> Yes, Send
           </button>
@@ -1622,7 +1622,19 @@
         tbody.innerHTML = '<tr><td colspan="13"><div class="empty-state"><i class="fas fa-users"></i><p>No employees found!</p></div></td></tr>';
         return;
       }
-      tbody.innerHTML = employees.map(emp => `
+      
+      tbody.innerHTML = employees.map(emp => {
+        const mailCount = emp.mailCount || 0;
+        
+        // LIMIT CHECK: Agar count 5 ya usse jyada hai to button disabled aur text dono RED honge
+        const isLimitFull = mailCount >= 5;
+        const sendBtnHtml = isLimitFull 
+          ? `<button class="btn-send-mail" style="background: #FEE2E2; color: var(--danger); border-color: #FCA5A5; cursor: not-allowed; transform: none; box-shadow: none;" disabled title="Limit of 5 mails reached"><i class="fas fa-ban"></i> Limit Full</button>`
+          : `<button class="btn-send-mail" onclick="confirmSendMail('${emp.empId}')" title="Send Login Credentials"><i class="fas fa-paper-plane"></i> Send</button>`;
+          
+        const countColor = isLimitFull ? 'var(--danger)' : 'var(--primary)';
+
+        return `
         <tr>
           <td>${emp.empId}</td>
           <td style="font-family: monospace; font-weight: 700; color: var(--primary);">${emp.password || '-'}</td>
@@ -1633,15 +1645,11 @@
           <td>${emp.weekOff || 'Sunday'}</td>
           <td><span class="badge badge-${emp.status === 'Active' ? 'success' : 'danger'}">${emp.status}</span></td>
           
-          <!-- Send Mail -->
-          <td>
-            <button class="btn-send-mail" onclick="confirmSendMail('${emp.empId}')" title="Send Login Credentials">
-              <i class="fas fa-paper-plane"></i> Send
-            </button>
-          </td>
+          <!-- Send Mail Button -->
+          <td>${sendBtnHtml}</td>
 
-          <!-- Mail Count -->
-          <td style="font-weight: 700; color: var(--primary);">${emp.mailCount || 0}</td>
+          <!-- Mail Count (X/5 Tracker) -->
+          <td style="font-weight: 700; color: ${countColor};">${mailCount}/5</td>
 
           <td><span class="badge badge-info" id="face-${emp.empId}">Checking...</span></td>
           <td>
@@ -1656,7 +1664,8 @@
               <button class="action-btn delete" onclick="deleteEmployee('${emp.empId}')"><i class="fas fa-trash"></i></button>
             </div>
           </td>
-        </tr>`).join('');
+        </tr>`;
+      }).join('');
 
       employees.forEach(async emp => {
         const res = await apiCall({ action: 'checkFaceRegistered', empId: emp.empId });
@@ -1961,7 +1970,7 @@
       return new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
     }
 
-    // Naye Functions: Send Credentials (Better UI)
+    // ── SEND CREDENTIALS (MODIFIED UX) ──
     let empIdForMail = null;
 
     function confirmSendMail(empId) {
@@ -1974,25 +1983,35 @@
       empIdForMail = null;
     }
 
-    // 🔴 AUTO-REFRESH FIX: Added loadEmployees() after successful email send
     document.getElementById('confirmSendMailBtn').addEventListener('click', async function() {
       if (!empIdForMail) return;
       const empId = empIdForMail;
-      closeMailConfirmModal(); // Modal turant close karein
+      
+      const btn = this;
+      const cancelBtn = document.getElementById('cancelMailBtn');
+      const originalText = btn.innerHTML;
+      
+      // 1. Button ko "Sending..." mode me dalo aur click lock karo
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+      btn.disabled = true;
+      cancelBtn.disabled = true;
 
-      // Sending indicator emoji ke sath
-      showToast('⏳ Sending email securely...', '');
-
+      // 2. API Call karein
       const result = await apiCall({ action: 'sendCredentials', empId: empId });
       
+      // 3. Wapas normal state me lao
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+      cancelBtn.disabled = false;
+      closeMailConfirmModal(); 
+      
+      // 4. Custom Messages & Background Refresh
       if (result.success) {
         showToast('✅ Credentials sent successfully!', 'success');
-        
-        // Background Table Refresh logic (Turant Mail Count update karne ke liye)
-        loadEmployees();
-        
+        loadEmployees(); // Turant count badha do
       } else {
-        showToast('❌ ' + (result.message || 'Failed to send email'), 'error');
+        // API error chupaya gaya hai, simple generic message de rahe hain
+        showToast('❌ Something went wrong! Please try again later.', 'error');
       }
     });
 
