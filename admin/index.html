@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Punch Book - Admin Panel</title>
   
-  <!-- FAVICON -->
   <link rel="icon" type="image/png" sizes="512x512" href="punchbook_logo.png">
   <link rel="icon" type="image/png" sizes="192x192" href="punchbook_logo.png">
   <link rel="apple-touch-icon" sizes="180x180" href="punchbook_logo.png">
@@ -13,9 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   
-  <!-- Face API & jsPDF -->
   <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-  <!-- Load jsPDF and AutoTable for PDF Generation -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 
@@ -805,7 +802,7 @@
 
     .stats-row-2 { 
       display: grid; 
-      grid-template-columns: repeat(3, 1fr); 
+      grid-template-columns: repeat(4, 1fr); /* 4 Cards fit perfectly */
       gap: 16px; 
       margin-bottom: 24px; 
     }
@@ -1184,14 +1181,13 @@
     
     #fullReportTable th, 
     #fullReportTable td { 
-        padding: 4px 6px; /* Compact padding */
+        padding: 4px 6px; 
         text-align: center; 
         border: 1px solid var(--gray-200); 
-        font-size: 11px; /* Smaller font for matrix */
+        font-size: 11px; 
         white-space: nowrap; 
     }
 
-    /* Adjusting left positions because widths are reduced now */
     .sticky-col-1 { position: sticky; left: 0px; z-index: 5; background-color: #ffffff; }
     .sticky-col-2 { position: sticky; left: 60px; z-index: 5; background-color: #ffffff; }
     .sticky-col-3 { position: sticky; left: 180px; z-index: 5; background-color: #ffffff; }
@@ -1250,15 +1246,12 @@
 </head>
 <body>
 
-  <!-- GLOBAL DATALIST FOR EMPLOYEE SEARCH -->
   <datalist id="employeeDatalist"></datalist>
 
-  <!-- ── GLOBAL BLUR LOADER ── -->
   <div class="global-loader" id="globalLoader">
     <div class="spinner"></div>
   </div>
 
-  <!-- ════════════════════ LOGIN PAGE ════════════════════ -->
   <div class="login-container" id="loginPage">
     <div class="login-box">
       <div class="logo-container">
@@ -1294,7 +1287,6 @@
     </div>
   </div>
 
-  <!-- ════════════════════ APP ════════════════════ -->
   <div class="app-container" id="appContainer">
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -1391,7 +1383,6 @@
         </div>
       </div>
 
-      <!-- ── Dashboard ── -->
       <div class="page active" id="dashboardPage">
         <div class="filters" style="background: rgba(255,255,255,0.92); padding: 12px 16px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
           <select id="dashDateRange" onchange="handleDateFilterChange('dash')">
@@ -1406,7 +1397,7 @@
           </select>
           <input type="date" id="dashFromDate" style="display:none;">
           <input type="date" id="dashToDate" style="display:none;">
-          <input type="text" id="dashEmpSearch" list="employeeDatalist" placeholder="Search Employee...">
+          <input type="text" id="dashEmpSearch" list="employeeDatalist" placeholder="Search Employee..." autocomplete="off">
           <button class="btn btn-primary" onclick="showSectionLoader(() => loadDashboard())">
             <i class="fas fa-search"></i> Apply
           </button>
@@ -1454,6 +1445,12 @@
             <div class="stat-names" id="statLeaveNames" title="">-</div>
           </div>
           <div class="stat-card">
+            <div class="stat-icon" style="background:#D1FAE5; color:#10B981;"><i class="fas fa-gift"></i></div>
+            <div class="stat-value" id="statCOff">0</div>
+            <div class="stat-label">C-Off Today</div>
+            <div class="stat-names" id="statCOffNames" title="">-</div>
+          </div>
+          <div class="stat-card">
             <div class="stat-icon teal"><i class="fas fa-umbrella-beach"></i></div>
             <div class="stat-value" id="statHoliday" style="font-size: 16px; line-height: 1.2; word-break: break-word; white-space: normal;">None</div>
             <div class="stat-label" style="margin-top: 8px;">Holiday</div>
@@ -1493,7 +1490,6 @@
         </div>
       </div>
 
-      <!-- ── Employees ── -->
       <div class="page" id="employeesPage">
         <div class="access-denied" id="empAccessDenied">
           <i class="fas fa-lock"></i>
@@ -1505,7 +1501,7 @@
             <div class="card-header">
               <h3>All Employees</h3>
               <div style="display:flex; gap:10px;">
-                <input type="text" id="empSearchInput" placeholder="Search by Name/ID..." style="padding:8px; border-radius:6px; border:1px solid #ccc; font-size:13px;" onkeyup="filterEmployeesList()">
+                <input type="text" id="empSearchInput" placeholder="Search by Name/ID..." style="padding:8px; border-radius:6px; border:1px solid #ccc; font-size:13px;" onkeyup="filterEmployeesList()" autocomplete="off">
                 <button class="btn" style="background-color: var(--primary); color: white; width: max-content !important; padding: 10px 24px; flex-shrink: 0;" onclick="openAddEmployeeModal()">
                   <i class="fas fa-plus"></i> Add Employee
                 </button>
@@ -1544,7 +1540,6 @@
         </div>
       </div>
 
-      <!-- ── Attendance ── -->
       <div class="page" id="attendancePage">
         <div class="card">
           <div class="card-header">
@@ -1564,7 +1559,7 @@
               </select>
               <input type="date" id="attFromDate" style="display:none;">
               <input type="date" id="attToDate" style="display:none;">
-              <input type="text" id="attEmpSearch" list="employeeDatalist" placeholder="Search Employee...">
+              <input type="text" id="attEmpSearch" list="employeeDatalist" placeholder="Search Employee..." autocomplete="off">
               <select id="attStatus">
                 <option value="All">All Status</option>
                 <option value="Present">Present/Early</option>
@@ -1606,7 +1601,6 @@
         </div>
       </div>
 
-      <!-- ── Overtime ── -->
       <div class="page" id="overtimePage">
         <div class="card">
           <div class="card-header">
@@ -1626,7 +1620,7 @@
               </select>
               <input type="date" id="otFromDate" style="display:none;">
               <input type="date" id="otToDate" style="display:none;">
-              <input type="text" id="otEmpSearch" list="employeeDatalist" placeholder="Search Employee...">
+              <input type="text" id="otEmpSearch" list="employeeDatalist" placeholder="Search Employee..." autocomplete="off">
               <button class="btn btn-primary" onclick="showSectionLoader(() => loadOvertime())">
                 <i class="fas fa-search"></i> Apply
               </button>
@@ -1660,7 +1654,6 @@
         </div>
       </div>
 
-      <!-- ── Leave ── -->
       <div class="page" id="leavePage">
         <div class="card">
           <div class="card-header">
@@ -1680,7 +1673,7 @@
               </select>
               <input type="date" id="lvFromDate" style="display:none;">
               <input type="date" id="lvToDate" style="display:none;">
-              <input type="text" id="lvEmpSearch" list="employeeDatalist" placeholder="Search Employee...">
+              <input type="text" id="lvEmpSearch" list="employeeDatalist" placeholder="Search Employee..." autocomplete="off">
               <button class="btn btn-primary" onclick="showSectionLoader(() => loadLeaves())">
                 <i class="fas fa-search"></i> Apply
               </button>
@@ -1717,7 +1710,6 @@
         </div>
       </div>
 
-      <!-- ── Holidays ── -->
       <div class="page" id="holidaysPage">
         <div class="card">
           <div class="card-header">
@@ -1745,7 +1737,6 @@
         </div>
       </div>
 
-      <!-- ── Reports (Admin only) ── -->
       <div class="page" id="reportsPage">
         <div class="access-denied" id="rptAccessDenied">
           <i class="fas fa-lock"></i>
@@ -1779,7 +1770,7 @@
                 </select>
                 <input type="date" id="reportFromDate" style="display:none;">
                 <input type="date" id="reportToDate" style="display:none;">
-                <input type="text" id="reportEmpSearch" list="employeeDatalist" placeholder="Search Employee...">
+                <input type="text" id="reportEmpSearch" list="employeeDatalist" placeholder="Search Employee..." autocomplete="off">
                 <select id="reportDepartment">
                   <option value="All">All Departments</option>
                 </select>
@@ -1832,7 +1823,6 @@
     </main>
   </div>
 
-  <!-- ── Photo View Modal ── -->
   <div class="modal-overlay" id="photoModal">
     <div class="modal" style="max-width: 400px;">
       <div class="modal-header">
@@ -1845,7 +1835,6 @@
     </div>
   </div>
 
-  <!-- ── Employee Modal ── -->
   <div class="modal-overlay" id="employeeModal">
     <div class="modal">
       <div class="modal-header">
@@ -1923,7 +1912,6 @@
     </div>
   </div>
 
-  <!-- ── Change Password Modal ── -->
   <div class="modal-overlay" id="changePasswordModal">
     <div class="modal" style="max-width: 450px;">
       <div class="modal-header">
@@ -1958,7 +1946,6 @@
     </div>
   </div>
 
-  <!-- ── Face Modal ── -->
   <div class="modal-overlay" id="faceModal">
     <div class="modal">
       <div class="modal-header">
@@ -1991,7 +1978,6 @@
     </div>
   </div>
 
-  <!-- ── Custom Mail Confirmation Modal ── -->
   <div class="modal-overlay" id="mailConfirmModal">
     <div class="modal" style="max-width: 380px; text-align: center;">
       <div class="modal-body" style="padding: 32px 24px 24px;">
@@ -2012,7 +1998,6 @@
     </div>
   </div>
   
-  <!-- ── LEAVE APPROVAL MODAL ── -->
   <div class="modal-overlay" id="leaveApprovalModal">
     <div class="modal" style="max-width: 500px;">
       <div class="modal-header">
@@ -2074,7 +2059,6 @@
 
   <div class="toast" id="toast"></div>
 
-  <!-- ════════════════════ SCRIPT ════════════════════ -->
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbybiwZGXe3nfuZ-1BixZdj0b9ZKVluyarm3LQNfLm-atqaxCj6l1jWxatwYQKMG88je/exec';
 
