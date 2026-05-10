@@ -802,7 +802,7 @@
 
     .stats-row-2 { 
       display: grid; 
-      grid-template-columns: repeat(4, 1fr); /* 4 Cards fit perfectly */
+      grid-template-columns: repeat(4, 1fr); 
       gap: 16px; 
       margin-bottom: 24px; 
     }
@@ -1026,7 +1026,7 @@
       position: absolute; 
       top: 0; 
       left: 0; 
-    }
+  }
 
     .face-status { 
       margin-top: 16px; 
@@ -1200,6 +1200,31 @@
         background-color: var(--gray-50);
         z-index: 6; 
     }
+
+    /* ── NEW BLUE EDIT MODAL STYLING ── */
+    #editPunchModal .modal {
+      background-color: #F0F9FF;
+      border: 2px solid #BAE6FD;
+    }
+    #editPunchModal .modal-header {
+      background-color: #0284C7;
+      border-bottom: none;
+    }
+    #editPunchModal .modal-header h3 {
+      color: white;
+    }
+    #editPunchModal .modal-close {
+      color: white;
+    }
+    #editPunchModal .modal-footer {
+      background-color: #E0F2FE;
+      border-top: 1px solid #BAE6FD;
+    }
+    
+    /* Edit History & Clickable Cells */
+    .punch-cell { cursor: pointer; transition: background 0.2s; }
+    .punch-cell:hover { background-color: #DBEAFE !important; box-shadow: inset 0 0 0 1px #3B82F6; }
+    .edit-count { font-size: 10px; color: var(--primary); margin-left: 2px; font-weight: 800; }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
@@ -1835,6 +1860,37 @@
     </div>
   </div>
 
+  <div class="modal-overlay" id="editPunchModal">
+    <div class="modal" style="max-width: 400px;">
+      <div class="modal-header">
+        <h3><i class="fas fa-edit"></i> Edit Punch Data</h3>
+        <button class="modal-close" onclick="closeEditPunchModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editPunchEmpId">
+        <input type="hidden" id="editPunchEmpName">
+        <input type="hidden" id="editPunchDate">
+        <input type="hidden" id="editPunchType">
+        <div class="form-group">
+          <label style="color: var(--primary-dark);">Current Value</label>
+          <input type="text" id="currentPunchValue" readonly style="background: #e0f2fe; border-color: #bae6fd;">
+        </div>
+        <div class="form-group">
+          <label style="color: var(--primary-dark);">New Value (e.g. 19:34:49 or leave blank for Miss Punch)</label>
+          <input type="text" id="newPunchValue" placeholder="Enter new time" style="border-color: #bae6fd;">
+        </div>
+        <div id="punchHistoryContainer" style="margin-top: 15px; max-height: 150px; overflow-y: auto; background: white; padding: 10px; border-radius: 8px; border: 1px solid #bae6fd; font-size: 12px;">
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeEditPunchModal()">Cancel</button>
+        <button class="btn btn-primary" style="width: auto;" onclick="submitPunchUpdate()">
+          <i class="fas fa-save"></i> Save Update
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="employeeModal">
     <div class="modal">
       <div class="modal-header">
@@ -2221,12 +2277,10 @@
         tabAdmin.classList.add('active-admin');
         loginBtn.innerHTML   = '<i class="fas fa-sign-in-alt"></i> Login as Admin';
         loginBtn.className   = 'btn btn-primary';
-        hint.textContent     = 'Enter your admin credentials to continue';
       } else {
         tabController.classList.add('active-controller');
         loginBtn.innerHTML   = '<i class="fas fa-sign-in-alt"></i> Login as Controller';
         loginBtn.className   = 'btn btn-controller';
-        hint.textContent     = 'Use your controller credentials to continue';
       }
     }
 
@@ -2555,6 +2609,70 @@
           break;
       }
     }
+
+    /* ── EDIT PUNCH LOGIC ── */
+    function openEditPunchModal(empId, empName, dateStr, punchType, currentVal, historyJsonStr) {
+        document.getElementById('editPunchEmpId').value = empId;
+        document.getElementById('editPunchEmpName').value = empName;
+        document.getElementById('editPunchDate').value = dateStr;
+        document.getElementById('editPunchType').value = punchType;
+        document.getElementById('currentPunchValue').value = currentVal;
+        
+        // If empty or miss punch, default input to empty so they can type it in easily
+        document.getElementById('newPunchValue').value = currentVal.includes('Miss') || currentVal === '-' || currentVal === 'Absent' || currentVal === 'Leave' || currentVal === 'Holiday' ? '' : currentVal;
+
+        let historyHtml = '<strong style="color:#0284C7; display:block; margin-bottom:5px;">Edit History Log:</strong>';
+        try {
+            let history = JSON.parse(decodeURIComponent(historyJsonStr));
+            if(history.length === 0) {
+                historyHtml += '<span style="color:var(--gray-500)">No previous edits recorded.</span>';
+            } else {
+                history.forEach((h, i) => {
+                    historyHtml += `<div style="padding: 6px; border-bottom: 1px dashed #bae6fd; margin-bottom:4px;">
+                        <span style="color:#0284C7; font-weight:800; margin-right:4px;">[${i+1}]</span>
+                        <span style="color:var(--gray-500); font-size:10px;">${h.date}</span><br>
+                        <span style="display:inline-block; margin-top:2px;">Changed from <b style="color:var(--gray-700)">${h.oldVal}</b> to <b style="color:var(--primary-dark)">${h.newVal}</b></span>
+                    </div>`;
+                });
+            }
+        } catch(e) {
+            historyHtml += '<span style="color:var(--danger)">Unable to load history.</span>';
+        }
+        
+        document.getElementById('punchHistoryContainer').innerHTML = historyHtml;
+        document.getElementById('editPunchModal').classList.add('active');
+    }
+
+    function closeEditPunchModal() {
+        document.getElementById('editPunchModal').classList.remove('active');
+    }
+
+    async function submitPunchUpdate() {
+        let empId = document.getElementById('editPunchEmpId').value;
+        let empName = document.getElementById('editPunchEmpName').value;
+        let dateStr = document.getElementById('editPunchDate').value;
+        let type = document.getElementById('editPunchType').value;
+        let newVal = document.getElementById('newPunchValue').value;
+
+        showSectionLoader();
+        let result = await apiCall({
+            action: 'updatePunchData',
+            empId: empId,
+            empName: empName,
+            dateStr: dateStr,
+            punchType: type,
+            newValue: newVal
+        });
+
+        if(result.success) {
+            showToast('Time updated successfully!', 'success');
+            closeEditPunchModal();
+            generateReport(); // Refresh matrix to show new times and the incremented count
+        } else {
+            showToast(result.message, 'error');
+        }
+    }
+
 
     async function loadDashboard() {
       const fromDate = document.getElementById('dashFromDate').value;
@@ -3196,7 +3314,7 @@
     }
 
     // ==========================================
-    // REPORTS / MATRIX GENERATION
+    // REPORTS / MATRIX GENERATION (UPDATED WITH CLICKABLE CELLS)
     // ==========================================
     async function generateReport() {
       const fromDate   = document.getElementById('reportFromDate').value;
@@ -3279,6 +3397,8 @@
         
         let bodyHTML = '';
         window.currentReportData.forEach(emp => {
+            let safeEmpName = emp.empName.replace(/'/g, "\\'"); // Prevent break in onclick
+            
             bodyHTML += `
             <tr>
                 <td class="sticky-col-1" rowspan="4" style="vertical-align: middle; border-bottom: 2px solid var(--gray-400);">
@@ -3291,7 +3411,7 @@
                     ${emp.department}
                 </td>
                 <td class="sticky-col-4" style="font-weight: 600; color: var(--gray-700); border-right: 2px solid var(--gray-400);">Punch in Time</td>
-                ${emp.dailyData.map(d => `<td style="color: ${d.pInColor}; font-weight: 600;">${d.pIn}</td>`).join('')}
+                ${emp.dailyData.map(d => `<td class="punch-cell" onclick="openEditPunchModal('${emp.empId}', '${safeEmpName}', '${d.date}', 'PunchIn', '${d.pIn}', '${encodeURIComponent(JSON.stringify(d.history.PunchIn))}')" style="color: ${d.pInColor}; font-weight: 600;">${d.pIn} ${d.pInCount > 0 ? `<span class="edit-count">(${d.pInCount})</span>` : ''}</td>`).join('')}
                 <td rowspan="4" style="vertical-align: middle; font-weight: bold; border-bottom: 2px solid var(--gray-400);">
                     ${emp.stats.totalDays}
                 </td>
@@ -3331,15 +3451,15 @@
             </tr>
             <tr>
                 <td class="sticky-col-4" style="font-weight: 600; color: var(--gray-700); border-right: 2px solid var(--gray-400);">Punch Out Time</td>
-                ${emp.dailyData.map(d => `<td style="color: ${d.pOutColor}; font-weight: 600;">${d.pOut}</td>`).join('')}
+                ${emp.dailyData.map(d => `<td class="punch-cell" onclick="openEditPunchModal('${emp.empId}', '${safeEmpName}', '${d.date}', 'PunchOut', '${d.pOut}', '${encodeURIComponent(JSON.stringify(d.history.PunchOut))}')" style="color: ${d.pOutColor}; font-weight: 600;">${d.pOut} ${d.pOutCount > 0 ? `<span class="edit-count">(${d.pOutCount})</span>` : ''}</td>`).join('')}
             </tr>
             <tr>
                 <td class="sticky-col-4" style="font-weight: 600; color: var(--gray-700); border-right: 2px solid var(--gray-400);">Punch in OT Time</td>
-                ${emp.dailyData.map(d => `<td style="color: ${d.otInColor}; font-weight: 600;">${d.otIn}</td>`).join('')}
+                ${emp.dailyData.map(d => `<td class="punch-cell" onclick="openEditPunchModal('${emp.empId}', '${safeEmpName}', '${d.date}', 'OTIn', '${d.otIn}', '${encodeURIComponent(JSON.stringify(d.history.OTIn))}')" style="color: ${d.otInColor}; font-weight: 600;">${d.otIn} ${d.otInCount > 0 ? `<span class="edit-count">(${d.otInCount})</span>` : ''}</td>`).join('')}
             </tr>
             <tr>
                 <td class="sticky-col-4" style="font-weight: 600; color: var(--gray-700); border-bottom: 2px solid var(--gray-400); border-right: 2px solid var(--gray-400);">Punch out OT Time</td>
-                ${emp.dailyData.map(d => `<td style="color: ${d.otOutColor}; font-weight: 600; border-bottom: 2px solid var(--gray-400);">${d.otOut}</td>`).join('')}
+                ${emp.dailyData.map(d => `<td class="punch-cell" onclick="openEditPunchModal('${emp.empId}', '${safeEmpName}', '${d.date}', 'OTOut', '${d.otOut}', '${encodeURIComponent(JSON.stringify(d.history.OTOut))}')" style="color: ${d.otOutColor}; font-weight: 600; border-bottom: 2px solid var(--gray-400);">${d.otOut} ${d.otOutCount > 0 ? `<span class="edit-count">(${d.otOutCount})</span>` : ''}</td>`).join('')}
             </tr>`;
         });
         
@@ -3347,7 +3467,7 @@
     }
 
     // ==========================================
-    // CSV EXPORT
+    // CSV EXPORT (Exports clean value without increment counter HTML)
     // ==========================================
     function exportCSV() {
         if(!window.currentReportData || !window.currentReportData.length) {
@@ -3396,7 +3516,7 @@
     }
 
     // ==========================================
-    // PDF EXPORT
+    // PDF EXPORT (Exports clean value without increment counter HTML)
     // ==========================================
     function exportPDF() {
         if(!window.currentReportData || !window.currentReportData.length) {
