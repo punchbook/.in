@@ -1376,7 +1376,7 @@
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
               <line x1="16" y1="3" x2="16" y2="21"></line>
-              <polygon points="9,10 12,12 9,14" fill="currentColor" stroke="none"></polygon>
+              <polygon points="9,9 12,12 9,15" fill="currentColor" stroke="none"></polygon>
             </svg>
           </button>
           <h1 id="pageTitle">Dashboard</h1>
@@ -2164,6 +2164,26 @@
       });
     }
 
+    // STRICT DATE FILTER ENFORCER: Applied to API results on frontend using safe YYYY-MM-DD
+    function filterRecordsByDate(records, fromDateStr, toDateStr) {
+       if (!records || !Array.isArray(records)) return [];
+       if (!fromDateStr || !toDateStr) return records;
+
+       const fromStr = fromDateStr.replace(/-/g, '');
+       const toStr = toDateStr.replace(/-/g, '');
+
+       return records.filter(record => {
+          let dStr = record.date || record.appliedOn || record.fromDate;
+          if (!dStr) return true; // Keep records if they miraculously lack a date field
+          
+          const d = new Date(dStr);
+          if (isNaN(d.getTime())) return true;
+
+          const recordDateStr = formatDate(d).replace(/-/g, '');
+          return recordDateStr >= fromStr && recordDateStr <= toStr;
+       });
+    }
+
     function getRangeDates(rangeType) {
       const today = new Date();
       let fromDate = new Date();
@@ -2268,7 +2288,6 @@
       const tabAdmin      = document.getElementById('tabAdmin');
       const tabController = document.getElementById('tabController');
       const loginBtn      = document.getElementById('loginBtn');
-      const hint          = document.getElementById('loginHint');
 
       tabAdmin.className      = 'role-tab';
       tabController.className = 'role-tab';
@@ -2308,8 +2327,18 @@
     }
 
     document.addEventListener('DOMContentLoaded', async function() {
+      // 1. Initialize Date Filters BEFORE calling showApp()
+      // This ensures fromDate and toDate aren't empty when Dashboard loads.
+      ['dash', 'att', 'ot', 'lv', 'report'].forEach(prefix => {
+        if (document.getElementById(prefix + 'DateRange')) {
+          let defaultVal = (prefix === 'lv' || prefix === 'report') ? 'thisMonth' : 'today';
+          document.getElementById(prefix + 'DateRange').value = defaultVal;
+          handleDateFilterChange(prefix);
+        }
+      });
+
+      // 2. Check login state
       const saved = sessionStorage.getItem('punchbook_user');
-      
       if (saved) {
         currentUser = JSON.parse(saved);
         selectedRole = currentUser.role;
@@ -2359,14 +2388,6 @@
       });
 
       await apiCall({ action: 'createDefaultAdmin' });
-
-      ['dash', 'att', 'ot', 'lv', 'report'].forEach(prefix => {
-        if (document.getElementById(prefix + 'DateRange')) {
-          let defaultVal = (prefix === 'lv' || prefix === 'report') ? 'thisMonth' : 'today';
-          document.getElementById(prefix + 'DateRange').value = defaultVal;
-          handleDateFilterChange(prefix);
-        }
-      });
       
       fetchEmployeesForDatalist();
     });
@@ -2587,6 +2608,10 @@
 
       switch(page) {
         case 'dashboard':  
+          // Force dashboard table to sync up properly when navigated back
+          document.getElementById('dashDateRange').value = 'today';
+          document.getElementById('dashEmpSearch').value = '';
+          handleDateFilterChange('dash');
           loadDashboard();   
           break;
         case 'employees':  
@@ -2673,17 +2698,6 @@
         }
     }
 
-    // ----------------------------------------------------------------
-    // 👇 CLIENT-SIDE DATE FILTERING HELPER
-    // ----------------------------------------------------------------
-    function applyDateFilter(records, fromDate, toDate) {
-      if (!fromDate || !toDate) return records; // fallback
-      return records.filter(r => {
-        if (!r.date) return false;
-        // r.date is expected to be "YYYY-MM-DD"
-        return r.date >= fromDate && r.date <= toDate;
-      });
-    }
 
     async function loadDashboard() {
       const fromDate = document.getElementById('dashFromDate').value;
@@ -2731,9 +2745,15 @@
       });
       
       if (attResult.success) { 
-        // 👇 Filter records client-side to guarantee only the chosen date range is shown
-        const filtered = applyDateFilter(attResult.records, fromDate, toDate);
-        renderRecentAttendance(filtered.slice(0, 10)); 
+        // Strict frontend filtering logic applied specifically to the table data
+        let filteredRecords = filterRecordsByDate(attResult.records, fromDate, toDate);
+        if (empId) {
+            filteredRecords = filteredRecords.filter(r => 
+                String(r.empId) === String(empId) || 
+                String(r.empName).toLowerCase().includes(String(empId).toLowerCase())
+            );
+        }
+        renderRecentAttendance(filteredRecords.slice(0, 10)); 
       }
     }
 
@@ -2785,8 +2805,8 @@
       currentRecentRecords = records;
       const tbody = document.getElementById('recentAttendanceTable');
       
-      if (!records.length) {
-        tbody.innerHTML = '<tr><td colspan="11"><div class="empty-state"><i class="fas fa-clock"></i><p>No attendance records found for this range</p></div></td></tr>';
+      if (!records || !records.length) {
+        tbody.innerHTML = '<tr><td colspan="11"><div class="empty-state"><i class="fas fa-clock"></i><p>No attendance records found for selected date</p></div></td></tr>';
         return;
       }
       
@@ -3204,9 +3224,22 @@
       const result = await apiCall({ action: 'getAllAttendance', filters: JSON.stringify(filters) });
       
       if (result.success) { 
-          // 👇 Apply client-side date filter to ensure only selected dates appear
-          const filtered = applyDateFilter(result.records, fromDate, toDate);
-          renderAttendance(filtered); 
+          let filteredRecords = filterRecordsByDate(result.records, fromDate, toDate);
+          
+          if (empId) {
+             filteredRecords = filteredRecords.filter(r => 
+                 String(r.empId) === String(empId) || 
+                 String(r.empName).toLowerCase().includes(String(empId).toLowerCase())
+             );
+          }
+          
+          if (status !== 'All') {
+              filteredRecords = filteredRecords.filter(r => {
+                  if (status === 'Present') return r.status === 'Present' || r.status === 'Early';
+                  return String(r.status).toLowerCase() === String(status).toLowerCase();
+              });
+          }
+          renderAttendance(filteredRecords); 
       }
     }
 
@@ -3214,7 +3247,7 @@
       currentAllRecords = records;
       const tbody = document.getElementById('attendanceTable');
       
-      if (!records.length) {
+      if (!records || !records.length) {
         tbody.innerHTML = '<tr><td colspan="11"><div class="empty-state"><i class="fas fa-clock"></i><p>No attendance records found</p></div></td></tr>';
         return;
       }
@@ -3273,9 +3306,14 @@
       const result = await apiCall({ action: 'getAllOvertime', filters: JSON.stringify(filters) });
       
       if (result.success) {
-        // 👇 Client-side filter for overtime too
-        const filtered = applyDateFilter(result.records, fromDate, toDate);
-        renderOvertime(filtered);
+        let filteredRecords = filterRecordsByDate(result.records, fromDate, toDate);
+        if (empId) {
+            filteredRecords = filteredRecords.filter(r => 
+                String(r.empId) === String(empId) || 
+                String(r.empName).toLowerCase().includes(String(empId).toLowerCase())
+            );
+        }
+        renderOvertime(filteredRecords);
       }
     }
 
@@ -3283,7 +3321,7 @@
       currentOTRecords = records;
       const tbody = document.getElementById('overtimeTable');
       
-      if (!records.length) {
+      if (!records || !records.length) {
         tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><i class="fas fa-business-time"></i><p>No overtime records found</p></div></td></tr>';
         return;
       }
@@ -3689,10 +3727,15 @@
       const result = await apiCall({ action: 'getAllLeaves', filters: JSON.stringify(filters) });
       
       if (result.success) {
-        // 👇 Client-side filter leaves by fromDate/ToDate as well
-        const filtered = applyDateFilter(result.leaves, fromDate, toDate);
-        currentLeaveRecords = filtered;
-        renderLeaves(filtered);
+        let filteredRecords = filterRecordsByDate(result.leaves, fromDate, toDate);
+        if (empId) {
+            filteredRecords = filteredRecords.filter(r => 
+                String(r.empId) === String(empId) || 
+                String(r.empName).toLowerCase().includes(String(empId).toLowerCase())
+            );
+        }
+        currentLeaveRecords = filteredRecords;
+        renderLeaves(filteredRecords);
       } else {
         tbody.innerHTML = `<tr><td colspan="12"><div class="empty-state"><p>${result.message}</p></div></td></tr>`;
       }
