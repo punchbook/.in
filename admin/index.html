@@ -2164,6 +2164,25 @@
       });
     }
 
+    // STRICT DATE FILTER ENFORCER: Applied to API results on frontend
+    function filterRecordsByDate(records, fromDateStr, toDateStr) {
+       if (!records || !Array.isArray(records)) return [];
+       if (!fromDateStr || !toDateStr) return records;
+
+       const from = new Date(fromDateStr);
+       from.setHours(0, 0, 0, 0);
+
+       const to = new Date(toDateStr);
+       to.setHours(23, 59, 59, 999);
+
+       return records.filter(record => {
+          let dStr = record.date || record.appliedOn || record.fromDate;
+          if (!dStr) return true; // Keep records if they miraculously lack a date field
+          const d = new Date(dStr);
+          return d.getTime() >= from.getTime() && d.getTime() <= to.getTime();
+       });
+    }
+
     function getRangeDates(rangeType) {
       const today = new Date();
       let fromDate = new Date();
@@ -2720,7 +2739,15 @@
       });
       
       if (attResult.success) { 
-        renderRecentAttendance(attResult.records.slice(0, 10)); 
+        // Strict frontend filtering logic applied here
+        let filteredRecords = filterRecordsByDate(attResult.records, fromDate, toDate);
+        if (empId) {
+            filteredRecords = filteredRecords.filter(r => 
+                String(r.empId) === String(empId) || 
+                String(r.empName).toLowerCase().includes(String(empId).toLowerCase())
+            );
+        }
+        renderRecentAttendance(filteredRecords.slice(0, 10)); 
       }
     }
 
@@ -3191,7 +3218,22 @@
       const result = await apiCall({ action: 'getAllAttendance', filters: JSON.stringify(filters) });
       
       if (result.success) { 
-          renderAttendance(result.records); 
+          let filteredRecords = filterRecordsByDate(result.records, fromDate, toDate);
+          
+          if (empId) {
+             filteredRecords = filteredRecords.filter(r => 
+                 String(r.empId) === String(empId) || 
+                 String(r.empName).toLowerCase().includes(String(empId).toLowerCase())
+             );
+          }
+          
+          if (status !== 'All') {
+              filteredRecords = filteredRecords.filter(r => {
+                  if (status === 'Present') return r.status === 'Present' || r.status === 'Early';
+                  return String(r.status).toLowerCase() === String(status).toLowerCase();
+              });
+          }
+          renderAttendance(filteredRecords); 
       }
     }
 
@@ -3258,7 +3300,14 @@
       const result = await apiCall({ action: 'getAllOvertime', filters: JSON.stringify(filters) });
       
       if (result.success) {
-        renderOvertime(result.records);
+        let filteredRecords = filterRecordsByDate(result.records, fromDate, toDate);
+        if (empId) {
+            filteredRecords = filteredRecords.filter(r => 
+                String(r.empId) === String(empId) || 
+                String(r.empName).toLowerCase().includes(String(empId).toLowerCase())
+            );
+        }
+        renderOvertime(filteredRecords);
       }
     }
 
@@ -3672,8 +3721,15 @@
       const result = await apiCall({ action: 'getAllLeaves', filters: JSON.stringify(filters) });
       
       if (result.success) {
-        currentLeaveRecords = result.leaves;
-        renderLeaves(result.leaves);
+        let filteredRecords = filterRecordsByDate(result.leaves, fromDate, toDate);
+        if (empId) {
+            filteredRecords = filteredRecords.filter(r => 
+                String(r.empId) === String(empId) || 
+                String(r.empName).toLowerCase().includes(String(empId).toLowerCase())
+            );
+        }
+        currentLeaveRecords = filteredRecords;
+        renderLeaves(filteredRecords);
       } else {
         tbody.innerHTML = `<tr><td colspan="12"><div class="empty-state"><p>${result.message}</p></div></td></tr>`;
       }
